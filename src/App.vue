@@ -1,27 +1,102 @@
+<script>
+import axios from 'axios';
+
+export default {
+  methods: {
+    logout() {
+      // Call the logout endpoint using Axios
+      const path = 'http://127.0.0.1:5000/';
+      axios.get(path + 'logout')
+        .then(response => {
+          // Handle the successful logout
+          console.log('Logout successful:', response.data);
+          // You can perform additional actions here if needed
+        })
+        .catch(error => {
+          // Handle errors
+          console.error('Logout error:', error);
+        });
+    }
+  }
+};
+</script>
 
 <template>
   <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="https://vuejs.org/" target="_blank" class="logo-container">
+        <img src="./assets/vue.svg" class="logo" alt="Vue logo" />
+      </a>
+      <router-link class="nav-link" to="/">Home</router-link>
+      <router-link class="nav-link" to="/login">Login</router-link>
+      <button class="logout-btn" @click="logout">Logout</button>
+      <!-- Add more links as needed -->
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+
+      <!-- Router View -->
+      <router-view></router-view>
+    </div>
   </div>
-    <router-view></router-view>
 </template>
 
 <style scoped>
+/* Reset default margin and padding */
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar styles */
+.navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 1em;
+}
+
+.logo-container {
+  margin-right: 1em;
+}
+
+/* Logo styles */
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 3em;
   will-change: filter;
   transition: filter 300ms;
 }
+
+/* Hover effect for the Vue logo */
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+
+/* Main content styles */
+.main-content {
+  padding: 1em;
+}
+
+/* Navbar link styles */
+.nav-link {
+  color: white;
+  text-decoration: none;
+  margin: 0 1em;
+}
+
+/* Logout button styles */
+.logout-btn {
+  padding: 0.5em 1em;
+  background-color: #42b883;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 3%;
+  font-size: 1em;
 }
 </style>
