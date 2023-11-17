@@ -1,6 +1,7 @@
 from flask_security import Security, SQLAlchemyUserDatastore, hash_password
-from models import User, Role
-from __init__ import db, app
+from models import db, user_datastore
+from __init__ import app
+from auth.auth import auth_bp
 
 
 def initalize_roles():
@@ -14,13 +15,14 @@ def initalize_roles():
 
 
 if __name__ == '__main__':
+
     app.app_context().push()
     db.create_all()
 
-    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     app.Security = Security(app, user_datastore)
 
     initalize_roles()
 
+    app.register_blueprint(auth_bp)
     db.session.commit()
     app.run(debug=True)
