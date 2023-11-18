@@ -1,7 +1,8 @@
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from models import db
-from flask_security import UserMixin, RoleMixin
+from flask_security import UserMixin, RoleMixin, SQLAlchemyUserDatastore
+from flask_sqlalchemy import SQLAlchemy
+from __init__ import db
 
 base = declarative_base()
 
@@ -36,3 +37,6 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime)
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
+
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
