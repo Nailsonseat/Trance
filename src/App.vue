@@ -3,6 +3,9 @@ import axios from 'axios';
 
 export default {
   methods: {
+    goToAdminAuth() {
+      this.$router.push('/admin-auth')
+    },
     logout() {
       // Call the logout endpoint using Axios
       const path = 'http://127.0.0.1:5000/';
@@ -28,9 +31,11 @@ export default {
       <a href="https://vuejs.org/" target="_blank" class="logo-container">
         <img src="./assets/vue.svg" class="logo" alt="Vue logo" />
       </a>
+      <h2>Trance</h2>
       <router-link class="nav-link" to="/">Home</router-link>
       <router-link class="nav-link" to="/login">Login</router-link>
-      <button class="logout-btn" @click="logout">Logout</button>
+      <router-link class="nav-link" to="/home-user">User Home</router-link>
+      <button @click="goToAdminAuth()" class="logout-btn">Admin</button>
       <!-- Add more links as needed -->
     </nav>
 
@@ -57,7 +62,7 @@ html {
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 1em;
+  padding-left: 2rem;
 }
 
 .logo-container {
@@ -84,8 +89,9 @@ html {
 /* Navbar link styles */
 .nav-link {
   color: white;
+  align-self: center;
   text-decoration: none;
-  margin: 0 1em;
+  margin-left: 3rem;
 }
 
 /* Logout button styles */
