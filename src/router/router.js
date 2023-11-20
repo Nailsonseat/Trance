@@ -1,12 +1,18 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import HelloWorldVue from "../components/HelloWorld.vue";
-import Login from "../components/Login.vue";
+import UserAuth from "../components/UserAuth.vue";
+import CreatorAuth from "../components/CreatorAuth.vue";
+import AdminAuth from "../components/AdminAuth.vue";
 import Dashboard from "../components/Dashboard.vue";
+import UserHome from "../components/UserHome.vue";
 
 const routes = [
   { path: "/", component: HelloWorldVue, name: "base" },
-  { path: "/login", component: Login, name: "Login" },
+  { path: "/login", component: UserAuth, name: "UserAuth" },
+  { path: "/login-c", component: CreatorAuth, name: "CreatorAuth" },
+  { path: "/admin-auth", component: AdminAuth, name: "AdminAuth" },
   { path: "/dashboard", component: Dashboard, name: "Dashboard" },
+  { path: "/home-user", component: UserHome, name: "UserHome" },
 ];
 
 export const router = createRouter({
