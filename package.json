@@ -10,12 +10,11 @@
   },
   "dependencies": {
     "@liripeng/vue-audio-player": "^1.5.2",
+    "@popperjs/core": "^2.11.8",
     "@vueform/toggle": "^2.1.4",
     "axios": "^1.6.2",
-    "bootstrap": "^5.3.2",
-    "bootstrap-icons-vue": "^1.11.1",
-    "bootstrap-vue": "^2.23.1",
-    "vue": "^3.3.8",
+    "bootstrap": "5.3.2",
+    "bootstrap-icons": "^1.11.2",
     "vue-router": "4"
   },
   "devDependencies": {
