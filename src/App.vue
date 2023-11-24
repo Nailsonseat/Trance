@@ -4,7 +4,9 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      shouldDisplayNavbar: false,
+      showDisplayNavbar: false,
+      showAdminButton: false,
+      showLogoutButton: false,
     };
   },
   methods: {
@@ -26,21 +28,29 @@ export default {
         });
     },
     shouldDisplayNavbarOnRoute(route) {
-      // Add logic to determine if the navbar should be displayed based on the route
-      // For example, display it only on certain routes
-      return route.name !== 'UserHome'
-      // return true;
+      //return route.name !== 'UserHome'
+      return true;
     },
+    shouldDisplayAdminButton(route) {
+      return route.name === 'UserAuth' || route.name === 'CreatorAuth';
+    },
+    shouldDisplayLogoutButton(route) {
+      return route.name === 'UserHome';
+    }
   },
   watch: {
     // Watch for changes in the route and update shouldDisplayNavbar accordingly
     $route(to, from) {
-      this.shouldDisplayNavbar = this.shouldDisplayNavbarOnRoute(to);
+      this.showDisplayNavbar = this.shouldDisplayNavbarOnRoute(to);
+      this.showLogoutButton = this.shouldDisplayLogoutButton(to);
+      this.showAdminButton = this.shouldDisplayAdminButton(to);
     },
   },
   created() {
     // Set the initial value of shouldDisplayNavbar based on the current route
-    this.shouldDisplayNavbar = this.shouldDisplayNavbarOnRoute(this.$route);
+    this.showDisplayNavbar = this.shouldDisplayNavbarOnRoute(this.$route);
+    this.showDisplayLogoutButton = this.shouldDisplayLogoutButton(this.$route);
+    this.showAdminButton = this.shouldDisplayAdminButton(this.$route);
   },
 };
 </script>
@@ -57,7 +67,8 @@ export default {
       <router-link class="nav-link" to="/login-user">Login</router-link>
       <router-link class="nav-link" to="/home-user">User Home</router-link>
       <router-link class="nav-link" to="/home-creator">Creator Home</router-link>
-      <button @click="goToAdminAuth()" class="logout-btn">Admin</button>
+      <button v-if="showAdminButton" @click="goToAdminAuth()" class="logout-btn">Admin</button>
+      <button v-if="showLogoutButton" class="logout-btn">Logout</button>
       <!-- Add more links as needed -->
     </nav>
 
