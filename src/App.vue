@@ -2,6 +2,11 @@
 import axios from 'axios';
 
 export default {
+  data() {
+    return {
+      shouldDisplayNavbar: false,
+    };
+  },
   methods: {
     goToAdminAuth() {
       this.$router.push('/admin-auth')
@@ -19,15 +24,31 @@ export default {
           // Handle errors
           console.error('Logout error:', error);
         });
-    }
-  }
+    },
+    shouldDisplayNavbarOnRoute(route) {
+      // Add logic to determine if the navbar should be displayed based on the route
+      // For example, display it only on certain routes
+      return route.name !== 'UserHome'
+      // return true;
+    },
+  },
+  watch: {
+    // Watch for changes in the route and update shouldDisplayNavbar accordingly
+    $route(to, from) {
+      this.shouldDisplayNavbar = this.shouldDisplayNavbarOnRoute(to);
+    },
+  },
+  created() {
+    // Set the initial value of shouldDisplayNavbar based on the current route
+    this.shouldDisplayNavbar = this.shouldDisplayNavbarOnRoute(this.$route);
+  },
 };
 </script>
 
 <template>
   <div>
     <!-- Navbar -->
-    <nav class="navbar">
+    <nav v-show="shouldDisplayNavbar" class="navbar">
       <a href="https://vuejs.org/" target="_blank" class="logo-container">
         <img src="./assets/vue.svg" class="logo" alt="Vue logo" />
       </a>
@@ -35,6 +56,7 @@ export default {
       <router-link class="nav-link" to="/">Home</router-link>
       <router-link class="nav-link" to="/login">Login</router-link>
       <router-link class="nav-link" to="/home-user">User Home</router-link>
+      <router-link class="nav-link" to="/home-creator">Creator Home</router-link>
       <button @click="goToAdminAuth()" class="logout-btn">Admin</button>
       <!-- Add more links as needed -->
     </nav>
@@ -62,7 +84,8 @@ html {
   width: 100%;
   display: flex;
   align-items: center;
-  padding-left: 2rem;
+  padding: 20px;
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
 }
 
 .logo-container {
