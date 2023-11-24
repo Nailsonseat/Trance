@@ -48,13 +48,13 @@ export default {
 <template>
   <div>
     <!-- Navbar -->
-    <nav v-show="shouldDisplayNavbar" class="navbar">
+    <nav v-show="showDisplayNavbar" class="navbar">
       <a href="https://vuejs.org/" target="_blank" class="logo-container">
         <img src="./assets/vue.svg" class="logo" alt="Vue logo" />
       </a>
       <h2>Trance</h2>
       <router-link class="nav-link" to="/">Home</router-link>
-      <router-link class="nav-link" to="/login">Login</router-link>
+      <router-link class="nav-link" to="/login-user">Login</router-link>
       <router-link class="nav-link" to="/home-user">User Home</router-link>
       <router-link class="nav-link" to="/home-creator">Creator Home</router-link>
       <button @click="goToAdminAuth()" class="logout-btn">Admin</button>

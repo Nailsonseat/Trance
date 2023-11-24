@@ -9,8 +9,8 @@ import CreatorHome from "../components/CreatorHome.vue";
 
 const routes = [
   { path: "/", component: HelloWorldVue, name: "base" },
-  { path: "/login", component: UserAuth, name: "UserAuth" },
-  { path: "/login-c", component: CreatorAuth, name: "CreatorAuth" },
+  { path: "/login-user", component: UserAuth, name: "UserAuth" },
+  { path: "/login-creator", component: CreatorAuth, name: "CreatorAuth" },
   { path: "/admin-auth", component: AdminAuth, name: "AdminAuth" },
   { path: "/dashboard", component: Dashboard, name: "Dashboard" },
   { path: "/home-user", component: UserHome, name: "UserHome" },
