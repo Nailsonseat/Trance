@@ -30,28 +30,25 @@ for field, field_type in login_fields.items():
 
 
 @auth_bp.post('/login-user')
-def user_login():  # Check if a user is already logged in
-    if current_user.is_authenticated:
-        return jsonify({"message": "User already logged in", "token": current_user.get_auth_token(), "email": current_user.email})
-
-    data = request.get_json()
-    email = data.get('email')
-    print("Entered")
+def login_user():
+    response = request.get_json()
+    email = response.get('email')
     if not email:
         return jsonify({"message": "email not provided"}), 400
-    user = user_datastore.find_user(email=email)
 
-    # Check if a user is already logged in
-    if current_user.is_authenticated:
-        return jsonify({"message": "User already logged in", "token": current_user.get_auth_token(), "email": current_user.email})
+    user = user_datastore.find_user(email=email, role='user')
 
     if not user:
         return jsonify({"message": "User Not Found"}), 404
 
-    if verify_password(data.get("password"), user.password):
+    if verify_password(response.get("password"), user.password):
         login_user(user)
+        user.last_login_time = datetime.utcnow()
         user_datastore.commit()
+        db.session.commit()
 
-        return jsonify({"token": user.get_auth_token(), "email": user.email})
+        print("Sucessfully logged in")
+
+        return jsonify({"token": user.get_auth_token(), "email": user.email, "role": user.roles[0].name})
     else:
-        return jsonify({"message": "Wrong Password"}), 400
+        return jsonify({"message": "FAILURE"}), 400
