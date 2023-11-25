@@ -1,9 +1,10 @@
+from datetime import datetime
 from flask import Blueprint, jsonify, request
-from flask_security import verify_password, current_user, login_user
-from werkzeug.security import check_password_hash
+from flask_security import verify_password, current_user, login_user, hash_password, logout_user
+from flask_security import auth_required, roles_required
 from flask_restful import Resource, Api, reqparse, fields
 from models import user_datastore
-from __init__ import app
+from __init__ import app, db
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -52,3 +53,34 @@ def login_user():
         return jsonify({"token": user.get_auth_token(), "email": user.email, "role": user.roles[0].name})
     else:
         return jsonify({"message": "FAILURE"}), 400
+
+
+@auth_bp.post('/register-user')
+def register_user():
+    response = request.get_json()
+    username = response.get('username')
+    email = response.get('email')
+    password = response.get('password')
+
+    print(response)
+
+    try:
+        print(user_datastore.find_user(email=email))
+        if not user_datastore.find_user(email=email):
+            print("User being added")
+            user_datastore.create_user(
+                username=username, email=email, password=hash_password(password), roles=['user'])
+        db.session.commit()
+        return jsonify({"message": "SUCCESS"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return f"An error occurred: {str(e)}"
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+@auth_required('token', 'session')
+def logout():
+    current_user.last_loggout_time = datetime.utcnow()
+    db.session.commit()
+    logout_user()
+    return jsonify({'message': 'Logout Sucessful'})
