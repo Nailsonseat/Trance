@@ -14,17 +14,21 @@ export default {
       this.$router.push('/admin-auth')
     },
     logout() {
-      // Call the logout endpoint using Axios
       const path = 'http://127.0.0.1:5000/';
-      axios.get(path + 'logout')
+      axios.post(path + 'logout')
         .then(response => {
-          // Handle the successful logout
           console.log('Logout successful:', response.data);
-          // You can perform additional actions here if needed
+          // Clear auth token and role from local storage
+
+          const tokenKey = 'auth-token';
+          const roleKey = 'role';
+          localStorage.removeItem(tokenKey);
+          localStorage.removeItem(roleKey);
+          // Redirect to the login page or perform other actions based on the response
+          this.$router.push('/login-user');
         })
         .catch(error => {
-          // Handle errors
-          console.error('Logout error:', error);
+          console.error('Logout error:', error.response.data.error);
         });
     },
     shouldDisplayNavbarOnRoute(route) {
@@ -35,7 +39,7 @@ export default {
       return route.name === 'UserAuth' || route.name === 'CreatorAuth';
     },
     shouldDisplayLogoutButton(route) {
-      return route.name === 'UserHome';
+      return route.name !== 'UserAuth' && route.name !== 'CreatorAuth';
     }
   },
   watch: {
@@ -68,7 +72,7 @@ export default {
       <router-link class="nav-link" to="/home-user">User Home</router-link>
       <router-link class="nav-link" to="/home-creator">Creator Home</router-link>
       <button v-if="showAdminButton" @click="goToAdminAuth()" class="logout-btn">Admin</button>
-      <button v-if="showLogoutButton" class="logout-btn">Logout</button>
+      <button v-if="showLogoutButton" @click="logout()" class="logout-btn">Logout</button>
       <!-- Add more links as needed -->
     </nav>
 
