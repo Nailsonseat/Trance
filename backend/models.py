@@ -39,4 +39,17 @@ class User(db.Model, UserMixin):
                             backref=db.backref('users', lazy='dynamic'))
 
 
+class Song(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    artist = db.Column(db.String(255), nullable=False)
+    lyrics = db.Column(db.Text)
+    likes = db.Column(db.Integer, default=0)
+    streamed_count = db.Column(db.Integer, default=0)
+    reports = db.Column(db.Integer, default=0)
+    album_id = db.Column(db.Integer, db.ForeignKey(
+        'album.id', ondelete='SET NULL'), nullable=True)
+    filepath = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
