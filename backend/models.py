@@ -58,4 +58,14 @@ class SongsLiked(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     song_id = db.Column(db.Integer, db.ForeignKey(
         'song.id'), unique=True, nullable=False)
+
+
+class Album(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    artist = db.Column(db.String(255), nullable=False)
+    release_date = db.Column(db.Date)
+    genre = db.Column(db.String(50))
+    reports = db.Column(db.Integer, default=0)
+    cover_path = db.Column(db.String(255))
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
