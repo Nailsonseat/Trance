@@ -52,4 +52,10 @@ class Song(db.Model):
     filepath = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
+class SongsLiked(db.Model):
+    __tablename__ = 'songs_liked'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    song_id = db.Column(db.Integer, db.ForeignKey(
+        'song.id'), unique=True, nullable=False)
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
