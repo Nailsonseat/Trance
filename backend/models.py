@@ -83,4 +83,9 @@ class PlaylistSong(db.Model):
         'playlist.id'), primary_key=True)
     song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key=True)
     added_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Genres(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
