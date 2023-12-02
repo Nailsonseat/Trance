@@ -88,4 +88,13 @@ class PlaylistSong(db.Model):
 class Genres(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
+
+
+class SongGenre(db.Model):
+    __tablename__ = 'song_genre'
+    song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key=True)
+    genre_id = db.Column(db.Integer, db.ForeignKey(
+        'genres.id'), primary_key=True)
+
+
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
