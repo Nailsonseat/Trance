@@ -61,15 +61,15 @@ def register_user():
     username = response.get('username')
     email = response.get('email')
     password = response.get('password')
+    role = response.get('role')
 
     print(response)
 
     try:
         print(user_datastore.find_user(email=email))
         if not user_datastore.find_user(email=email):
-            print("User being added")
             user_datastore.create_user(
-                username=username, email=email, password=hash_password(password), roles=['user'])
+                username=username, email=email, password=hash_password(password), roles=[role])
         db.session.commit()
         return jsonify({"message": "SUCCESS"}), 200
     except Exception as e:
