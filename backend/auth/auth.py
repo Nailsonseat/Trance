@@ -77,10 +77,10 @@ def register_user():
         return f"An error occurred: {str(e)}"
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@auth_bp.post('/logout')
 @auth_required('token', 'session')
 def logout():
     current_user.last_loggout_time = datetime.utcnow()
-    db.session.commit()
     logout_user()
+    db.session.commit()
     return jsonify({'message': 'Logout Sucessful'})
