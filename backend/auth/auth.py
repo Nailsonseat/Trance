@@ -1,13 +1,12 @@
 from datetime import datetime
 from flask import Blueprint, jsonify, request
-from flask_security import verify_password, current_user, login_user, hash_password, logout_user
-from flask_security import auth_required, roles_required
-from flask_restful import Resource, Api, reqparse, fields
+from flask_security import verify_password, hash_password, logout_user, auth_required, roles_required, login_user, current_user
 from models import user_datastore
 from __init__ import app, db
 
 
 auth_bp = Blueprint('auth', __name__)
+
 
 @app.get('/admin')
 @auth_required("token")
@@ -34,8 +33,6 @@ def user_login():
         user.last_login_time = datetime.utcnow()
         user_datastore.commit()
         db.session.commit()
-
-        print("Sucessfully logged in")
 
         return jsonify({"token": user.get_auth_token(), "email": user.email, "role": user.roles[0].name})
     else:
