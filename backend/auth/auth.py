@@ -8,26 +8,12 @@ from __init__ import app, db
 
 
 auth_bp = Blueprint('auth', __name__)
-api = Api(auth_bp)
 
-register_fields = {
-    'username': fields.String,
-    'email': fields.String,
-    'password': fields.String
-}
-
-register_parser = reqparse.RequestParser()
-for field, field_type in register_fields.items():
-    register_parser.add_argument(field, type=field_type)
-
-login_fields = {
-    'email': fields.String,
-    'password': fields.String
-}
-
-login_parser = reqparse.RequestParser()
-for field, field_type in login_fields.items():
-    login_parser.add_argument(field, type=field_type)
+@app.get('/admin')
+@auth_required("token")
+@roles_required("admin")
+def admin():
+    return "Hello Admin"
 
 
 @auth_bp.post('/login-user')
