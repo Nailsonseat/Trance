@@ -31,13 +31,14 @@ for field, field_type in login_fields.items():
 
 
 @auth_bp.post('/login-user')
-def login_user():
+def user_login():
     response = request.get_json()
     email = response.get('email')
+
     if not email:
         return jsonify({"message": "email not provided"}), 400
 
-    user = user_datastore.find_user(email=email, role='user')
+    user = user_datastore.find_user(email=email)
 
     if not user:
         return jsonify({"message": "User Not Found"}), 404
