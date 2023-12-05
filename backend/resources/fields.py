@@ -27,3 +27,10 @@ album_fields = {
     'songs': fields.List(fields.Nested(song_fields)),
 }
 
+# Define the response format for playlists
+playlist_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'created_at': fields.DateTime,
+    'songs': fields.List(fields.Nested(song_fields)),
+}
