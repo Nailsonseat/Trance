@@ -8,3 +8,11 @@ class AlbumResource(Resource):
         songs = Song.query.filter_by(album_id=album_id).all()
         album.songs = songs
         return album
+
+
+class AlbumListResource(Resource):
+    @marshal_with(album_fields)
+    def get(self):
+        albums = Album.query.all()
+        return albums
+
