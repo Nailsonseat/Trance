@@ -49,3 +49,36 @@ class AlbumCreateResource(Resource):
         db.session.commit()
 
         return new_album, 201
+
+
+class AlbumManagementResource(Resource):
+    @marshal_with(album_fields)
+    def put(self, album_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('title', type=str, help='Album title')
+        parser.add_argument('artist', type=str, help='Artist name')
+        parser.add_argument('release_date', type=str, help='Release date')
+        parser.add_argument('genre', type=str, help='Genre')
+        args = parser.parse_args()
+
+        # Logic to update an existing album
+        album = Album.query.get_or_404(album_id)
+
+        if args['title']:
+            album.title = args['title']
+        if args['artist']:
+            album.artist = args['artist']
+        if args['release_date']:
+            album.release_date = args['release_date']
+        if args['genre']:
+            album.genre = args['genre']
+
+        db.session.commit()
+
+        return album
+
+    def delete(self, album_id):
+        album = Album.query.get_or_404(album_id)
+        db.session.delete(album)
+        db.session.commit()
+        return {'message': 'Album deleted successfully'}
