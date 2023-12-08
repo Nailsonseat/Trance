@@ -45,3 +45,40 @@ class PlaylistCreateResource(Resource):
         db.session.commit()
 
         return new_playlist, 201
+
+
+class PlaylistManagementResource(Resource):
+    @marshal_with(playlist_fields)
+    @roles_required('user')
+    def put(self, playlist_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('songs_to_add', type=list,
+                            help='List of song IDs to add to the playlist')
+        parser.add_argument('songs_to_remove', type=list,
+                            help='List of song IDs to remove from the playlist')
+        args = parser.parse_args()
+
+        playlist = Playlist.query.get_or_404(playlist_id)
+
+        if args['songs_to_add']:
+            songs_to_add = Song.query.filter(
+                Song.id.in_(args['songs_to_add'])).all()
+
+            # Link the playlist with added songs through the SongsLiked table
+            for song in songs_to_add:
+                if song not in playlist.songs:
+                    playlist.songs.append(song)
+
+        if args['songs_to_remove']:
+            songs_to_remove = Song.query.filter(
+                Song.id.in_(args['songs_to_remove'])).all()
+
+            # Unlink the playlist from removed songs through the SongsLiked table
+            for song in songs_to_remove:
+                if song in playlist.songs:
+                    playlist.songs.remove(song)
+
+        db.session.commit()
+
+        return playlist
+
