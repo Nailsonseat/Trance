@@ -15,3 +15,11 @@ class SongResource(Resource):
     def get(self, song_id):
         song = Song.query.get_or_404(song_id)
         return song
+
+
+class SongListResource(Resource):
+    @marshal_with(song_fields)
+    def get(self):
+        songs = Song.query.all()
+        return songs
+
