@@ -1,5 +1,47 @@
 <script>
+import Modal from "../components/Modal.vue";
+import { ref, onMounted, nextTick } from "vue";
+import VuePictureCropper, { cropper } from 'vue-picture-cropper'
+
+
 export default {
+    data() {
+        return {
+            songTitle: '',
+            songLyrics: '',
+            selectedCover: null,
+            selectedMusic: '',
+            uploadStatus: '',
+            musicSizeExceeded: false,
+            headers: {
+                'Content-type': 'audio/mpeg',
+                'Accept': 'audio/mpeg'
+            },
+            isMusicSelected: false,
+            musicUploaderOptions: {
+                target: '//localhost:5000/songs/upload',
+                testChunks: false,
+                chunkSize: 1 * 1024 * 1024 * 20,
+                accept: 'audio/*',
+                singleFile: true,
+                maxSize: 90 * 1024,
+            },
+
+            isCoverSelected: false,
+            coverSizeExceeded: false,
+            coverUploaderOptions: {
+                target: '//localhost:5000/covers/upload',
+                testChunks: false,
+                chunkSize: 1 * 1024 * 1024 * 20,
+                accept: 'image/*',
+                singleFile: true,
+                maxSize: 20 * 1024 * 1024,
+            },
+            cover: null,
+            textInput: '',
+            genres: [],
+        };
+    },
     methods: {
         createSong() {
             // Implement logic for creating a new song
