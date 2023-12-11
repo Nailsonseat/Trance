@@ -60,8 +60,16 @@ export default {
         togglePasswordVisibility() {
             this.showPassword = !this.showPassword;
         },
-        async submitForm() {
-            // Add your logic for login or register based on the value of isLogin
+        isLocalStorageSupported() {
+            try {
+                const testKey = 'test';
+                localStorage.setItem(testKey, testKey);
+                localStorage.removeItem(testKey);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        },
             if (this.isLoginPage) {
                 // Login logic
                 console.log('Logging in with:', this.email, this.password);
