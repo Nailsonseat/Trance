@@ -5,21 +5,27 @@
             <button @click="goToCreatorAuth()" class="creator-role-button">Creator</button>
         </div>
         <div class="login-container">
-
-            <h1>{{ isLoginPage ? 'Login' : 'Register' }}</h1>
+            <h1 class="page-title">{{ isLoginPage ? 'Login' : 'Register' }}</h1>
             <form @submit.prevent="submitForm">
-                <label class="input-label" for="username">Email</label>
-                <input class="input" type="text" id="username" v-model="email" />
+
+                <label class="input-label" v-if="!isLoginPage" for="username">Username</label>
+                <input class="input" v-if="!isLoginPage" type="text" id="username" v-model="username" />
+
+                <label class="input-label" for="email">Email</label>
+                <input class="input" type="text" id="email" v-model="email" />
 
                 <label class="input-label" for="password">Password</label>
-
                 <input class="input" type="password" id="password" v-model="password"
                     :type="showPassword ? 'text' : 'password'" />
 
-
-                <!-- Additional fields for registration -->
+                <!-- Confirm Password field for registration -->
                 <label class="input-label" v-if="!isLoginPage" for="confirm-password">Confirm Password</label>
                 <input class="input" v-if="!isLoginPage" id="confirm-password" v-model="confirmPassword" />
+
+                <!-- Warning text for password mismatch -->
+                <p v-if="!isLoginPage && password !== confirmPassword" class="warning-text">Passwords do not match!</p>
+
+
 
                 <button class="submit-button" type="submit">{{ isLoginPage ? 'Login' : 'Register' }}</button>
             </form>
@@ -29,24 +35,25 @@
                 <span>{{ isLoginPage ? "Don't have an account?" : "Already have an account?" }}</span>
                 <Toggle class="switcher" v-model="isLoginPage" on-label="Login" off-label="Register" />
             </div>
-
         </div>
     </div>
 </template>
 
 
 <style src="@vueform/toggle/themes/default.css"></style>
+
 <script>
 import axios from 'axios';
-import Toggle from '@vueform/toggle'
+import Toggle from '@vueform/toggle';
 
 export default {
     data() {
         return {
             email: '',
+            username: '',
             password: '',
             confirmPassword: '',
-            isLoginPage: true, // Default to show login form
+            isLoginPage: true,
             showPassword: false,
         };
     },
@@ -55,7 +62,7 @@ export default {
     },
     methods: {
         goToCreatorAuth() {
-            this.$router.push('/login-c');
+            this.$router.push('/login-creator');
         },
         togglePasswordVisibility() {
             this.showPassword = !this.showPassword;
@@ -75,12 +82,12 @@ export default {
             if (this.isLoginPage) {
                 // Login logic
                 console.log('Logging in with:', this.email, this.password);
-            axios.post(path + 'login-user', { email: this.email, password: this.password }, { headers: { 'Access-Control-Allow-Origin': '*' } })
-                .then(response => {
+                axios.post(path + 'login-user', { email: this.email, password: this.password }, { headers: { 'Access-Control-Allow-Origin': '*' } })
+                    .then(response => {
                         const token = response.data.token;
                         const role = response.data.role;
                         console.log('Operation successful (Login) :', response.data);
-                    // Redirect to the dashboard or perform other actions based on the response
+                        // Redirect to the dashboard or perform other actions based on the response
 
                         if (this.isLocalStorageSupported()) {
                             const tokenKey = 'auth-token';
@@ -91,10 +98,10 @@ export default {
 
 
                         this.$router.push('/home-user');
-                })
-                .catch(error => {
+                    })
+                    .catch(error => {
                         console.error('Operation error (Login) :', error.response.data.error);
-                });
+                    });
 
             } else if (this.password === this.confirmPassword) {
                 console.log('Registering in with:', this.email, this.password);
@@ -110,13 +117,19 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .auth-component {
     border: 1px solid #ccc;
     border-radius: 25px;
     max-width: 630px;
-    margin: 0 auto;
+    margin: 50px auto 0 auto;
     box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+}
+
+.page-title {
+    margin-top: 40px;
+    margin-bottom: 40px;
 }
 
 .role-switcher {
@@ -147,7 +160,7 @@ export default {
 }
 
 .login-container {
-    max-width: 450px;
+    max-width: auto;
     padding-top: 20px;
     padding-bottom: 50px;
     padding-left: 90px;
@@ -162,8 +175,8 @@ export default {
 }
 
 .input {
-    margin-bottom: 2.5rem;
-    height: 45px;
+    margin-bottom: 40px;
+    height: 50px;
     border-radius: 20px;
     font-size: medium;
     border-color: #42b883;
@@ -173,7 +186,7 @@ export default {
 .input-label {
     font-size: large;
     align-self: start;
-    padding-bottom: 2px;
+    margin-bottom: 10px;
 }
 
 .switcher {
@@ -193,11 +206,17 @@ label {
     margin-bottom: 5px;
 }
 
+.warning-text {
+    color: red;
+}
+
 .submit-button {
     padding: 10px;
-    height: 45px;
-    margin-bottom: 2.5rem;
+    height: 50px;
+    margin-top: 20px;
+    margin-bottom: 40px;
     background-color: #42b883;
+    border-radius: 20px;
     color: white;
     border: none;
     cursor: pointer;
@@ -206,3 +225,6 @@ label {
 
 /* Switch styles */
 </style>
+
+
+<style></style>
