@@ -19,8 +19,8 @@
 
         <!-- Audio Player -->
         <div class="audio-player">
-            <audio-player ref="audioPlayer" :audio-list="audioList.map(elm => elm.url)" :before-play="handleBeforePlay"
-                theme-color="#42b883" v-model:shuffleOn="shuffleOn" />
+            <audio-player ref="audioPlayer" :audio-list="audioList.map(elm => elm.url)" theme-color="#42b883"
+                v-model:shuffleOn="shuffleOn" />
         </div>
     </div>
 </template>
