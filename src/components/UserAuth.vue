@@ -70,24 +70,41 @@ export default {
                 return false;
             }
         },
+        submitForm() {
+            const path = 'http://127.0.0.1:5000/';
             if (this.isLoginPage) {
                 // Login logic
                 console.log('Logging in with:', this.email, this.password);
-            } else {
-                // Register logic
-                console.log('Registering with:', this.email, this.password, this.confirmPassword);
-            }
-
-            const path = 'http://127.0.0.1:5000/';
             axios.post(path + 'login-user', { email: this.email, password: this.password }, { headers: { 'Access-Control-Allow-Origin': '*' } })
                 .then(response => {
-                    console.log('Operation successful:', response.data);
+                        const token = response.data.token;
+                        const role = response.data.role;
+                        console.log('Operation successful (Login) :', response.data);
                     // Redirect to the dashboard or perform other actions based on the response
-                    this.$router.push('/dashboard');
+
+                        if (this.isLocalStorageSupported()) {
+                            const tokenKey = 'auth-token';
+                            const roleKey = 'role';
+                            localStorage.setItem(tokenKey, token);
+                            localStorage.setItem(roleKey, role);
+                        }
+
+
+                        this.$router.push('/home-user');
                 })
                 .catch(error => {
-                    console.error('Operation error:', error.response.data.error);
+                        console.error('Operation error (Login) :', error.response.data.error);
                 });
+
+            } else if (this.password === this.confirmPassword) {
+                console.log('Registering in with:', this.email, this.password);
+                axios.post(path + 'register-user', { username: this.username, email: this.email, password: this.password, role: 'user' }, { headers: { 'Access-Control-Allow-Origin': '*' } })
+                    .then(response => {
+                        console.log('Operation successful (Register) :', response.data);
+                    }).catch(error => {
+                        console.error('Operation error(Register) :', error.response.data.error);
+                    });
+            }
         },
     },
 };
