@@ -1,6 +1,10 @@
-from flask_security import Security, SQLAlchemyUserDatastore, hash_password
-from models import db, user_datastore
-from __init__ import app
+from flask_security import Security, SQLAlchemyUserDatastore, hash_password, login_user
+from models import user_datastore
+from __init__ import app, db, api
+from resources.miscellaneous import AdminDashboardResource, FlagSongResource
+from resources.song_resources import SongResource, SongListResource, SongCreateResource, SongManagementResource, SongUploadResource
+from resources.album_resources import AlbumListResource, AlbumCreateResource, AlbumManagementResource, AlbumResource
+from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource
 from auth.auth import auth_bp
 
 
@@ -26,5 +30,23 @@ if __name__ == '__main__':
     initalize_roles()
 
     app.register_blueprint(auth_bp)
-    db.session.commit()
+
+    api.add_resource(AdminDashboardResource, '/admin/dashboard')
+
+    api.add_resource(SongListResource, '/songs')
+    api.add_resource(AlbumListResource, '/albums')
+
+    api.add_resource(PlaylistCreateResource, '/playlist/create')
+    api.add_resource(PlaylistManagementResource, '/playlist/<int:playlist_id>')
+    api.add_resource(FlagSongResource, '/songs/<int:song_id>/flag')
+
+    api.add_resource(SongResource, '/song/<int:song_id>')
+    api.add_resource(SongCreateResource, '/songs/create')
+    api.add_resource(SongUploadResource, '/songs/upload')
+    api.add_resource(SongManagementResource, '/songs/<int:song_id>/manage')
+
+    api.add_resource(AlbumResource, '/album/<int:album_id>')
+    api.add_resource(AlbumCreateResource, '/albums/create')
+    api.add_resource(AlbumManagementResource, '/albums/<int:album_id>/manage')
+
     app.run(debug=True)
