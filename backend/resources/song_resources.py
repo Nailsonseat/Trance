@@ -67,3 +67,51 @@ class SongUploadResource(Resource):
             }, 201
         else:
             return {'message': 'No MP3 file provided'}, 400
+
+
+class SongCreateResource(Resource):
+    @marshal_with(song_fields)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('title', type=str, required=True,
+                            help='Title is required')
+        parser.add_argument('artist', type=str, required=True,
+                            help='Artist is required')
+        parser.add_argument('lyrics', type=str, required=True,
+                            help='Lyrics are required')
+        parser.add_argument('album_id', type=int, help='Album ID')
+        parser.add_argument('filepath', type=str,
+                            help='Path where mp3 is stored')
+        args = parser.parse_args()
+
+        # Fill in the created_at with the current time
+        args['created_at'] = datetime.utcnow()
+
+        # Logic to create a new song
+        new_song = Song(
+            title=args['title'],
+            artist=args['artist'],
+            lyrics=args['lyrics'],
+            album_id=args['album_id'],
+            filepath=args['filepath'],
+            created_at=args['created_at']
+        )
+
+        db.session.add(new_song)
+        db.session.commit()
+
+        # Handling genre assignment
+        genres = request.json.get('genres', [])
+        for genre_name in genres:
+            genre = Genres.query.filter_by(name=genre_name).first()
+            if genre is None:
+                genre = Genres(name=genre_name)
+                db.session.add(genre)
+                db.session.commit()
+
+            song_genre = SongGenre(song_id=new_song.id, genre_id=genre.id)
+            db.session.add(song_genre)
+
+        db.session.commit()
+
+        return new_song, 201
