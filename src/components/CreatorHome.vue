@@ -322,26 +322,6 @@ export default {
     margin-top: 20px;
 }
 
-onMusicAdded(file) {
-    if (file.size > 20 * 1024 * 1024) {
-        this.musicSizeExceeded=true;
-    }
-
-    else {
-        this.musicSizeExceeded=false;
-        // This method will be called when a file is added
-        console.log('File added:', file);
-    }
-}
-
-,
-onMusicSubmitted(files, fileList, event) {
-    if ( !this.musicSizeExceeded) {
-        this.isMusicSelected= !this.isMusicSelected;
-    }
-}
-
-,
 .close {
     border: 1px solid #fff;
     background-color: red;
