@@ -14,3 +14,16 @@ song_fields = {
     'created_at': fields.DateTime,
     'genres': fields.List(fields.String),
 }
+
+# Define the response format for albums
+album_fields = {
+    'id': fields.Integer,
+    'title': fields.String,
+    'artist': fields.String,
+    'release_date': fields.DateTime,
+    'genre': fields.String,
+    'reports': fields.Integer,
+    'cover_path': fields.String,
+    'songs': fields.List(fields.Nested(song_fields)),
+}
+
