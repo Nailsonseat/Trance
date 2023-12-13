@@ -33,6 +33,40 @@
                 </div>
             </div>
         </div>
+
+        <Modal @close="toggleModal" :modalActive="modalActive">
+            <div class="position-absolute top-50 start-50 translate-middle modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4">Add a Song</h5>
+                    <button type="button" class="close" @click="toggleModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="row h-100">
+
+                        <!-- Left section for upload song and cover pic -->
+                        <div class="col w-50" style="border-right: 1px solid #ffffff;">
+                            <div class="modal-left-section d-flex flex-column justify-content-center h-100">
+                                <!-- Add your upload song and cover pic components or content here -->
+                                <label class="my-4 fs-4" for="songFile">Upload Song:</label>
+
+                                <uploader ref="musicUploaderRef" :options="musicUploaderOptions" :autoStart="false"
+                                    class="drop-zone d-flex flex-column flex-column align-items-center justify-content-center"
+                                    :style="{ 'padding-right': isMusicSelected ? '28px' : '0' }" @file-added="onMusicAdded"
+                                    @file-success="onMusicSuccess" @files-submitted="onMusicSubmitted"
+                                    @file-error="onMusicError">
+                                    <uploader-drop v-if="!isMusicSelected"
+                                        class="d-flex h-100 w-100 flex-column align-items-center justify-content-center">
+                                        <span>Drop mp3 file</span>
+                                        <span class="my-1">Or</span>
+                                        <uploader-btn class="btn btn-outline-light">Select MP3 file</uploader-btn>
+                                    </uploader-drop>
+                                    <uploader-list v-show="!musicSizeExceeded"></uploader-list>
+                                    <span v-show="musicSizeExceeded">Maximum file size allowed 20mb</span>
+                                </uploader>
 <script>
 import Modal from "../components/Modal.vue";
 import { ref, onMounted, nextTick } from "vue";
