@@ -115,3 +115,30 @@ class SongCreateResource(Resource):
         db.session.commit()
 
         return new_song, 201
+
+
+class SongManagementResource(Resource):
+    @marshal_with(song_fields)
+    def put(self, song_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('title', type=str)
+        parser.add_argument('artist', type=str)
+        parser.add_argument('lyrics', type=str)
+        parser.add_argument('album_id', type=int)
+        args = parser.parse_args()
+
+        song = Song.query.get_or_404(song_id)
+
+        # Logic to update an existing song
+        if args['title']:
+            song.title = args['title']
+        if args['artist']:
+            song.artist = args['artist']
+        if args['lyrics']:
+            song.lyrics = args['lyrics']
+        if args['album_id']:
+            song.album_id = args['album_id']
+
+        db.session.commit()
+
+        return song
