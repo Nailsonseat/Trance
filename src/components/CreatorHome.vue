@@ -125,34 +125,85 @@ export default {
         onCoverError(rootFile, file, message, chunk) {
             console.log("Message", message);
         },
+        ready() {
+            console.log("Ready event");
+        }
     },
 };
 </script>
 
-<template>
-    <div>
-        <h2 style="text-align: start; font-size: 45px; margin-top: 30px; margin-left: 50px;">Trance Creator Studio</h2>
-        <div class="functionality-section">
-            <h3>User Functionalities</h3>
-            <!-- Include user functionalities here -->
-            <router-link :to="{ name: 'UserAuth' }">Go to User Home</router-link>
-        </div>
-        <div class="functionality-section">
-            <h3>Creator Functionalities</h3>
-            <!-- Include creator functionalities here -->
-            <button @click="createSong">Create Song</button>
-            <button @click="editSong">Edit Song</button>
-            <button @click="removeSong">Remove Song</button>
-            <button @click="createAlbum">Create Album</button>
-            <button @click="editAlbum">Edit Album</button>
-            <button @click="removeAlbum">Remove Album</button>
-            <button @click="assignSongToAlbum">Assign Song to Album</button>
-        </div>
-    </div>
-</template>
-
 <style scoped>
+.drop-zone {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #ccc;
+    padding-right: 0%;
+    border-radius: 5px;
+    align-self: center;
+}
+
+.cover-image-viewer {}
+
+.modal-dialog {}
+
+.modal-content {
+    margin: auto;
+    background-color: #242424;
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    height: 900px;
+    width: 1200px;
+}
+
+/* Add any other styling you need for the modal */
+.modal-left-section,
+.modal-right-section {
+    /* Add your specific styles for left and right sections if needed */
+}
+
+.custom-container {
+    border: 2px solid #fff;
+    /* White solid border */
+    border-radius: 15px;
+    /* Border radius of 15px */
+    padding: 20px;
+    /* Add padding for content inside the container */
+    width: 400px;
+    height: 400px;
+}
+
 .functionality-section {
     margin-top: 20px;
+}
+
+onMusicAdded(file) {
+    if (file.size > 20 * 1024 * 1024) {
+        this.musicSizeExceeded=true;
+    }
+
+    else {
+        this.musicSizeExceeded=false;
+        // This method will be called when a file is added
+        console.log('File added:', file);
+    }
+}
+
+,
+onMusicSubmitted(files, fileList, event) {
+    if ( !this.musicSizeExceeded) {
+        this.isMusicSelected= !this.isMusicSelected;
+    }
+}
+
+,
+.close {
+    border: 1px solid #fff;
+    background-color: red;
+}
+
+.container {}
+
+.btn {
+    margin-bottom: 10px;
 }
 </style>
