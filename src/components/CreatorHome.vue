@@ -91,6 +91,59 @@
                             </div>
                         </div>
 
+
+
+
+
+                        <!-- Right section for song name and lyrics -->
+                        <div class="col w-50">
+                            <div class="modal-right-section d-flex flex-column justify-content-center h-100 px-3">
+                                <!-- Add your fields (title, lyrics, etc.) component or content here -->
+                                <label class="py-3" for="songTitle">Title:</label>
+                                <input type="text" id="songTitle" v-model="songTitle"
+                                    class="form-control bg-transparent text-white">
+
+                                <label class="py-3" for="songLyrics">Lyrics:</label>
+                                <textarea id="songLyrics" v-model="songLyrics"
+                                    class="form-control bg-transparent text-white"></textarea>
+
+                                <label class="py-3" for="songTitle">Genres:</label>
+                                <div>
+                                    <div class="input-group mb-3">
+                                        <input v-model="textInput" @keyup.enter="addChip" @keyup.space="addChip" type="text"
+                                            class="form-control bg-transparent text-white"
+                                            placeholder="Type and press Enter...">
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <span v-for="(chip, index) in genres" :key="index"
+                                            :class="['badge', 'rounded-pill', getColorClass(index), 'mr-2', 'ps-3', 'm-1']">
+                                            <span class="d-flex align-items-center fs-6 fw-light">{{ chip }}
+                                                <button type="button" @click="removeChip(index)"
+                                                    class="p-1 fs-5 text-white bg-transparent"
+                                                    aria-label="Close">&times;</button>
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="uploadMedia">Add Song</button>
+                    <button type="button" class="btn btn-primary" @click="toggleModal">Close</button>
+                </div>
+
+            </div>
+        </Modal>
+    </div>
+</template>
+
 <script>
 import Modal from "../components/Modal.vue";
 import { ref, onMounted, nextTick } from "vue";
