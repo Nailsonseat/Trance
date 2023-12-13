@@ -142,3 +142,10 @@ class SongManagementResource(Resource):
         db.session.commit()
 
         return song
+
+    def delete(self, song_id):
+        song = Song.query.get_or_404(song_id)
+        db.session.delete(song)
+        db.session.commit()
+
+        return {'message': 'Song deleted successfully'}
