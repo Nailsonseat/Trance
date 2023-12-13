@@ -77,14 +77,21 @@ export default {
                 this.isMusicSelected = !this.isMusicSelected;
             }
         },
+        onCoverAdded(file) {
+            if (file.size > 20 * 1024 * 1024) {
+                this.coverSizeExceeded = true;
+            } else {
+                this.coverSizeExceeded = false;
+
+                // This method will be called when a cover image file is added
+                console.log('Cover file added:', file);
+            }
         },
-        removeAlbum() {
-            // Implement logic for removing an existing album
-            console.log("Removing an existing album");
-        },
-        assignSongToAlbum() {
-            // Implement logic for assigning a song to an album
-            console.log("Assigning a song to an album");
+        onCoverSubmitted(files, fileList, event) {
+            if (!this.coverSizeExceeded) {
+                this.cover = URL.createObjectURL(files[0].file)
+                this.isCoverSelected = !this.isCoverSelected;
+            }
         },
     },
 };
