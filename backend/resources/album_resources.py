@@ -23,7 +23,6 @@ class AlbumListResource(Resource):
         return albums
 
 
-
 class AlbumCreateResource(Resource):
     @marshal_with(album_fields)
     def post(self):
