@@ -40,3 +40,30 @@ class SongUploadResource(Resource):
         self.parser.add_argument(
             'file', type=datastructures.FileStorage, location='files', required=True, help='MP3 file is required')
 
+    def post(self):
+
+        mp3_file = request.files['file']
+
+        if mp3_file:
+            # Generate a unique filename using the current timestamp
+            timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+            filename = f"{timestamp}_{mp3_file.filename}"
+
+            # Save the file to the assets folder
+            upload_path = os.path.join(
+                app.config['UPLOAD_FOLDER'], filename)
+            open(upload_path, 'w+')
+            mp3_file.save(upload_path)
+
+            length = self.audio_duration(int(WAVE(upload_path).info.length))
+            return {
+                'message': 'File uploaded successfully',
+                'file_path': upload_path,
+                'duration': {
+                    "hours": length[0],
+                    "minutes": length[1],
+                    "seconds": length[2]
+                }
+            }, 201
+        else:
+            return {'message': 'No MP3 file provided'}, 400
