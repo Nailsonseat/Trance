@@ -42,6 +42,26 @@ export default {
             genres: [],
         };
     },
+    components: {
+        Modal,
+        VuePictureCropper,
+    },
+    setup() {
+        const modalActive = ref(null);
+
+        const toggleModal = () => {
+            modalActive.value = !modalActive.value;
+        };
+        const musicUploaderRef = ref(null)
+        const coverUploaderRef = ref(null)
+        onMounted(() => {
+            nextTick(() => {
+                window.uploader = musicUploaderRef.uploader
+                window.coverUploader = coverUploaderRef.uploader
+            })
+        });
+        return { modalActive, toggleModal, musicUploaderRef, coverUploaderRef };
+    },
     methods: {
         createSong() {
             // Implement logic for creating a new song

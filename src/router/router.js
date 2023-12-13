@@ -6,6 +6,7 @@ import AdminAuth from "../components/AdminAuth.vue";
 import Dashboard from "../components/Dashboard.vue";
 import UserHome from "../components/UserHome.vue";
 import CreatorHome from "../components/CreatorHome.vue";
+import Test from "../components/Test.vue";
 
 const routes = [
   { path: "/", component: HelloWorldVue, name: "base" },
