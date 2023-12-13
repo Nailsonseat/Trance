@@ -23,3 +23,20 @@ class SongListResource(Resource):
         songs = Song.query.all()
         return songs
 
+
+class SongUploadResource(Resource):
+
+    def audio_duration(self, length):
+        hours = length // 3600  # calculate in hours
+        length %= 3600
+        mins = length // 60  # calculate in minutes
+        length %= 60
+        seconds = length  # calculate in seconds
+
+        return hours, mins, seconds
+
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument(
+            'file', type=datastructures.FileStorage, location='files', required=True, help='MP3 file is required')
+
