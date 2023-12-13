@@ -67,6 +67,30 @@
                                     <uploader-list v-show="!musicSizeExceeded"></uploader-list>
                                     <span v-show="musicSizeExceeded">Maximum file size allowed 20mb</span>
                                 </uploader>
+
+                                <label class="my-4 fs-4" for="coverPic">Upload Cover Picture:</label>
+
+                                <!-- Add your upload cover image components here -->
+                                <uploader ref="coverUploaderRef" :options="coverUploaderOptions" :autoStart="false"
+                                    class="drop-zone d-flex flex-column flex-column align-items-center justify-content-center"
+                                    :style="{ 'padding-right': isCoverSelected ? '28px' : '0' }" @file-added="onCoverAdded"
+                                    @file-success="onCoverSuccess" @files-submitted="onCoverSubmitted"
+                                    @file-error="onCoverError" v-if="!isCoverSelected">
+                                    <uploader-drop
+                                        class="d-flex h-100 w-100 flex-column align-items-center justify-content-center">
+                                        <span>Drop image file</span>
+                                        <span class="my-1">Or</span>
+                                        <uploader-btn class="btn btn-outline-light">Select image file</uploader-btn>
+                                    </uploader-drop>
+                                    <uploader-list v-show="!coverSizeExceeded"></uploader-list>
+                                    <span v-show="coverSizeExceeded">Maximum file size allowed 20mb</span>
+                                </uploader>
+                                <div v-if="isCoverSelected">
+                                    <img class="drop-zone" :src="cover" alt="Hello">
+                                </div>
+                            </div>
+                        </div>
+
 <script>
 import Modal from "../components/Modal.vue";
 import { ref, onMounted, nextTick } from "vue";
