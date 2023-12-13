@@ -93,6 +93,38 @@ export default {
                 this.isCoverSelected = !this.isCoverSelected;
             }
         },
+        addChip() {
+            if (this.textInput.trim() !== '') {
+                this.genres.push(this.textInput.trim());
+                this.textInput = '';
+            }
+        },
+        removeChip(index) {
+            this.genres.splice(index, 1);
+        },
+        getColorClass(index) {
+            const colorClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-light'];
+            const colorIndex = index % colorClasses.length;
+            return `text-${colorClasses[colorIndex]}`;
+        },
+        uploadMedia(file) {
+            const musicUploader = this.musicUploaderRef.uploader
+            const coverUploader = this.coverUploaderRef.uploader
+            musicUploader.upload()
+            coverUploader.upload()
+        },
+        onMusicSuccess(rootFile, file, message, chunk) {
+            console.log("Message", message);
+        },
+        onMusicError(rootFile, file, message, chunk) {
+            console.log("Message", message);
+        },
+        onCoverSuccess(rootFile, file, message, chunk) {
+            console.log("Message", message);
+        },
+        onCoverError(rootFile, file, message, chunk) {
+            console.log("Message", message);
+        },
     },
 };
 </script>
