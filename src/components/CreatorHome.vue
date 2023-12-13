@@ -63,25 +63,20 @@ export default {
         return { modalActive, toggleModal, musicUploaderRef, coverUploaderRef };
     },
     methods: {
-        createSong() {
-            // Implement logic for creating a new song
-            console.log("Creating a new song");
+        onMusicAdded(file) {
+            if (file.size > 20 * 1024 * 1024) {
+                this.musicSizeExceeded = true;
+            } else {
+                this.musicSizeExceeded = false;
+                // This method will be called when a file is added
+                console.log('File added:', file);
+            }
         },
-        editSong() {
-            // Implement logic for editing an existing song
-            console.log("Editing an existing song");
+        onMusicSubmitted(files, fileList, event) {
+            if (!this.musicSizeExceeded) {
+                this.isMusicSelected = !this.isMusicSelected;
+            }
         },
-        removeSong() {
-            // Implement logic for removing an existing song
-            console.log("Removing an existing song");
-        },
-        createAlbum() {
-            // Implement logic for creating a new album
-            console.log("Creating a new album");
-        },
-        editAlbum() {
-            // Implement logic for editing an existing album
-            console.log("Editing an existing album");
         },
         removeAlbum() {
             // Implement logic for removing an existing album
