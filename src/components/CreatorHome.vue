@@ -1,3 +1,38 @@
+<template>
+    <div>
+        <div class="container mt-5">
+            <h2 class="text-start display-4">Trance Creator Studio</h2>
+            <div class="functionality-section mt-4">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mx-auto">
+                            <div class="custom-container mt-5 d-flex flex-column justify-content-end">
+                                <div class="w-100 h-100">
+                                    <span style="font-size: large;">Total Songs</span>
+                                </div>
+                                <button @click="toggleModal" class="btn btn-success btn-block">
+                                    Add a Song
+                                </button>
+                                <button @click="createSong" class="btn btn-success btn-block">
+                                    Edit Songs
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mx-auto">
+                            <div class="custom-container mt-5 d-flex flex-column justify-content-end">
+                                <span>Total albums</span>
+                                <button @click="editSong" class="btn btn-warning btn-block">
+                                    Add an Album
+                                </button>
+                                <button @click="editSong" class="btn btn-warning btn-block">
+                                    Edit Albums
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 <script>
 import Modal from "../components/Modal.vue";
 import { ref, onMounted, nextTick } from "vue";
