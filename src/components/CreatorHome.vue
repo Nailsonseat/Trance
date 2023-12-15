@@ -71,20 +71,22 @@
                                 <label class="my-4 fs-4" for="coverPic">Upload Cover Picture:</label>
 
                                 <!-- Add your upload cover image components here -->
-                                <uploader ref="coverUploaderRef" :options="coverUploaderOptions" :autoStart="false"
-                                    class="drop-zone d-flex flex-column flex-column align-items-center justify-content-center"
-                                    :style="{ 'padding-right': isCoverSelected ? '28px' : '0' }" @file-added="onCoverAdded"
-                                    @file-success="onCoverSuccess" @files-submitted="onCoverSubmitted"
-                                    @file-error="onCoverError" v-if="!isCoverSelected">
-                                    <uploader-drop
-                                        class="d-flex h-100 w-100 flex-column align-items-center justify-content-center">
-                                        <span>Drop image file</span>
-                                        <span class="my-1">Or</span>
-                                        <uploader-btn class="btn btn-outline-light">Select image file</uploader-btn>
-                                    </uploader-drop>
-                                    <uploader-list v-show="!coverSizeExceeded"></uploader-list>
-                                    <span v-show="coverSizeExceeded">Maximum file size allowed 20mb</span>
-                                </uploader>
+                                <div class=" d-flex flex-column flex-column align-items-center justify-content-center"
+                                    v-show="!isCoverSelected">
+                                    <uploader ref="coverUploaderRef" :options="coverUploaderOptions" :autoStart="false"
+                                        class="drop-zone" :style="{ 'padding-right': isCoverSelected ? '28px' : '0' }"
+                                        @file-added="onCoverAdded" @file-success="onCoverSuccess"
+                                        @files-submitted="onCoverSubmitted" @file-error="onCoverError">
+                                        <uploader-drop
+                                            class="d-flex h-100 w-100 flex-column align-items-center justify-content-center">
+                                            <span>Drop image file</span>
+                                            <span class="my-1">Or</span>
+                                            <uploader-btn class="btn btn-outline-light">Select image file</uploader-btn>
+                                        </uploader-drop>
+                                        <uploader-list v-show="!coverSizeExceeded"></uploader-list>
+                                        <span v-show="coverSizeExceeded">Maximum file size allowed 20mb</span>
+                                    </uploader>
+                                </div>
                                 <div v-if="isCoverSelected">
                                     <img class="drop-zone" :src="cover" alt="Hello">
                                 </div>
@@ -170,7 +172,6 @@ export default {
                 chunkSize: 1 * 1024 * 1024 * 20,
                 accept: 'audio/*',
                 singleFile: true,
-                maxSize: 90 * 1024,
             },
 
             isCoverSelected: false,
@@ -178,10 +179,9 @@ export default {
             coverUploaderOptions: {
                 target: '//localhost:5000/covers/upload',
                 testChunks: false,
-                chunkSize: 1 * 1024 * 1024 * 20,
+
                 accept: 'image/*',
                 singleFile: true,
-                maxSize: 20 * 1024 * 1024,
             },
             cover: null,
             textInput: '',
@@ -202,7 +202,7 @@ export default {
         const coverUploaderRef = ref(null)
         onMounted(() => {
             nextTick(() => {
-                window.uploader = musicUploaderRef.uploader
+                window.wwwwuploader = musicUploaderRef.uploader
                 window.coverUploader = coverUploaderRef.uploader
             })
         });
@@ -212,6 +212,7 @@ export default {
         onMusicAdded(file) {
             if (file.size > 20 * 1024 * 1024) {
                 this.musicSizeExceeded = true;
+                file.ignored = true;
             } else {
                 this.musicSizeExceeded = false;
                 // This method will be called when a file is added
@@ -226,6 +227,7 @@ export default {
         onCoverAdded(file) {
             if (file.size > 20 * 1024 * 1024) {
                 this.coverSizeExceeded = true;
+                file.ignored = true;
             } else {
                 this.coverSizeExceeded = false;
 
@@ -253,11 +255,14 @@ export default {
             const colorIndex = index % colorClasses.length;
             return `text-${colorClasses[colorIndex]}`;
         },
-        uploadMedia(file) {
+        uploadMedia() {
             const musicUploader = this.musicUploaderRef.uploader
             const coverUploader = this.coverUploaderRef.uploader
-            musicUploader.upload()
+            console.log("upload", musicUploader)
+            console.log("upload", coverUploader)
+            //      musicUploader.upload()
             coverUploader.upload()
+
         },
         onMusicSuccess(rootFile, file, message, chunk) {
             console.log("Message", message);
