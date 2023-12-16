@@ -6,7 +6,6 @@ from datetime import datetime
 
 
 class CoverUploadResource(Resource):
-
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument(
@@ -23,6 +22,7 @@ class CoverUploadResource(Resource):
             # Save the file to the assets folder
             upload_path = os.path.join(
                 "../src/assets/cover", filename)
+            open(upload_path, 'w+')
             image_file.save(upload_path)
 
             return {
