@@ -5,6 +5,7 @@ from resources.miscellaneous import AdminDashboardResource, FlagSongResource
 from resources.song_resources import SongResource, SongListResource, SongCreateResource, SongManagementResource, SongUploadResource
 from resources.album_resources import AlbumListResource, AlbumCreateResource, AlbumManagementResource, AlbumResource
 from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource
+from resources.cover_resources import CoverUploadResource
 from auth.auth import auth_bp
 
 
@@ -13,11 +14,14 @@ def initalize_roles():
         name='admin', description='Administrator')
     app.Security.datastore.find_or_create_role(
         name='user', description='User')
+
     app.Security.datastore.find_or_create_role(
         name='creator', description='Creator')
+    db.session.commit()
     if not app.Security.datastore.find_user(username='admin'):
         app.Security.datastore.create_user(
             username='admin', email='admin@gmail.com', password=hash_password('12345678'), roles=[admin_role])
+    db.session.commit()
 
 
 if __name__ == '__main__':
@@ -43,6 +47,7 @@ if __name__ == '__main__':
     api.add_resource(SongResource, '/song/<int:song_id>')
     api.add_resource(SongCreateResource, '/songs/create')
     api.add_resource(SongUploadResource, '/songs/upload')
+    api.add_resource(CoverUploadResource, '/covers/upload')
     api.add_resource(SongManagementResource, '/songs/<int:song_id>/manage')
 
     api.add_resource(AlbumResource, '/album/<int:album_id>')
