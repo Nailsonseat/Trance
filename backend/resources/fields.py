@@ -11,10 +11,13 @@ song_fields = {
     'reports': fields.Integer,
     'album_id': fields.Integer,
     'filepath': fields.String,
+    'coverpath': fields.String,
     'created_at': fields.DateTime,
     'genres': fields.List(fields.String),
+    'hours': fields.Integer,
+    'minutes': fields.Integer,
+    'seconds': fields.Integer,
 }
-
 # Define the response format for albums
 album_fields = {
     'id': fields.Integer,
