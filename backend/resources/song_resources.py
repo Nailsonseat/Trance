@@ -54,17 +54,24 @@ class SongUploadResource(Resource):
                 app.config['UPLOAD_FOLDER'], filename)
             open(upload_path, 'w+')
             mp3_file.save(upload_path)
+            response_data = {}
+            audio = MP3(upload_path)
 
-            length = self.audio_duration(int(WAVE(upload_path).info.length))
-            return {
+            # contains all the metadata about the wavpack file
+            audio_info = audio.info
+            length = int(audio_info.length)
+            hours, minutes, seconds = self.audio_duration(length)
+
+            response_data = {
                 'message': 'File uploaded successfully',
                 'file_path': upload_path,
                 'duration': {
-                    "hours": length[0],
-                    "minutes": length[1],
-                    "seconds": length[2]
+                    "hours": hours,
+                    "minutes": minutes,
+                    "seconds": seconds
                 }
-            }, 201
+            }
+            return make_response(jsonify(response_data), 201)
         else:
             return {'message': 'No MP3 file provided'}, 400
 
