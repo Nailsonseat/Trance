@@ -50,6 +50,10 @@ class Song(db.Model):
     album_id = db.Column(db.Integer, db.ForeignKey(
         'album.id', ondelete='SET NULL'), nullable=True)
     filepath = db.Column(db.String(255))
+    coverpath = db.Column(db.String(255))
+    hours = db.Column(db.Integer, default=0)
+    minutes = db.Column(db.Integer, default=0)
+    seconds = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
