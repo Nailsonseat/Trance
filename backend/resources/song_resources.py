@@ -129,23 +129,38 @@ class SongManagementResource(Resource):
     def put(self, song_id):
         parser = reqparse.RequestParser()
         parser.add_argument('title', type=str)
-        parser.add_argument('artist', type=str)
         parser.add_argument('lyrics', type=str)
-        parser.add_argument('album_id', type=int)
+        parser.add_argument('genres', type=list)
         args = parser.parse_args()
 
         song = Song.query.get_or_404(song_id)
 
-        # Logic to update an existing song
-        if args['title']:
-            song.title = args['title']
-        if args['artist']:
-            song.artist = args['artist']
-        if args['lyrics']:
-            song.lyrics = args['lyrics']
-        if args['album_id']:
-            song.album_id = args['album_id']
+        # Remove existing genre associations
+        SongGenre.query.filter_by(song_id=song.id).delete()
 
+        # Commit the changes to the database
+        db.session.commit()
+
+        # Add new genre associations
+        new_genres = []
+
+        for genre_name in args['genres']:
+            # Check if the genre already exists
+            genre = Genres.query.filter_by(name=genre_name).first()
+            if not genre:
+                # If the genre doesn't exist, create a new one
+                genre = Genres(name=genre_name)
+                db.session.add(genre)
+                db.session.commit()
+
+            # Create a SongGenre association
+            song_genre = SongGenre(song_id=song.id, genre_id=genre.id)
+            new_genres.append(song_genre)
+
+        # Add the new genre associations to the SongGenre table
+        db.session.bulk_save_objects(new_genres)
+
+        # Commit the changes to the database
         db.session.commit()
 
         return song
