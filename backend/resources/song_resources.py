@@ -167,7 +167,23 @@ class SongManagementResource(Resource):
 
     def delete(self, song_id):
         song = Song.query.get_or_404(song_id)
+
+        # Delete the associated MP3 file if it exists
+        if song.filepath:
+            try:
+                os.remove(song.filepath)
+            except Exception as e:
+                print(f"Error deleting MP3 file: {e}")
+
+        # Delete the associated cover image file if it exists
+        if song.coverpath:
+            try:
+                os.remove(song.coverpath)
+            except Exception as e:
+                print(f"Error deleting cover image file: {e}")
+
+        # Delete the song record from the database
         db.session.delete(song)
         db.session.commit()
 
-        return {'message': 'Song deleted successfully'}
+        return {'message': 'Song and associated files deleted successfully'}
