@@ -166,24 +166,35 @@
     </div>
 </template>
 
+
+
 <script>
 import AudioPlayer from '@liripeng/vue-audio-player'
+import axios from 'axios';
+import { VueDraggableNext } from 'vue-draggable-next';
+import Modal from "../components/Modal.vue";
+
 export default {
     // Your component logic goes here
+    components: {
+        AudioPlayer,
+        draggable: VueDraggableNext,
+        Modal
+    },
     data() {
         return {
             currentAudioName: '',
-            audioList: [
-                {
-                    name: 'audio1',
-                    url: "src/assets/The Living Tombstone - My Ordinary Life.mp3"
-                },
-                {
-                    name: 'audio2',
-                    url: 'https://www.0dutv.com/upload/dance/20200316/C719452E3C7834080007662021EA968E.mp3'
-                },
-            ],
+            songs: [],
+            audioList: [],
+            filteredSongs: [], // For music section filtering
             shuffleOn: false,
+            sortBy: 'title', // Initial sort criteria
+            searchBy: 'title',
+            pane: 'music',
+            playlists: [],
+            addPlaylistModalActive: false,
+            isPlaylistModalActive: false,
+            newPlaylistName: '',
         };
     },
     components: {
