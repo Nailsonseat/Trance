@@ -107,3 +107,46 @@
         </div>
     </div>
 </template>
+
+
+<script>
+import { ref } from 'vue';
+import axios from 'axios';
+export default {
+    setup() {
+        const musicUploaderRef = ref(null)
+        const coverUploaderRef = ref(null)
+
+        return { musicUploaderRef, coverUploaderRef };
+    },
+    data() {
+        return {
+            songTitle: '',
+            songLyrics: '',
+            genreInput: '',
+            genres: [],
+
+            isMusicSelected: false,
+            isCoverSelected: false,
+            musicSelectionResponse: null,
+            coverSelectionResponse: null,
+
+            musicUploaderOptions: {
+                target: '//localhost:5000/songs/upload',
+                testChunks: false,
+                chunkSize: 1 * 1024 * 1024 * 20,
+                accept: 'audio/*',
+                singleFile: true,
+            },
+
+
+            coverUploaderOptions: {
+                target: '//localhost:5000/covers/upload',
+                testChunks: false,
+                accept: 'image/*',
+                singleFile: true,
+            },
+
+
+        }
+    },
