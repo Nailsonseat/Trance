@@ -253,6 +253,31 @@ export default {
 </script>
 
 <style scoped>
+.song-item {
+    height: 90px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+}
+
+.cover-pic {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+}
+
+.song-details {
+    flex: 1;
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 .drop-zone {
     width: 200px;
     height: 200px;
