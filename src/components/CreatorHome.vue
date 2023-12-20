@@ -209,61 +209,45 @@ export default {
                     console.error('Error fetching songs:', error);
                 });
         },
-        onCoverAdded(file) {
+
+
+        onAlbumCoverAdded(file) {
             if (file.size > 20 * 1024 * 1024) {
-                this.coverSizeExceeded = true;
+                this.albumCoverSizeExceeded = true;
                 file.ignored = true;
             } else {
-                this.coverSizeExceeded = false;
-
-                // This method will be called when a cover image file is added
-                console.log('Cover file added:', file);
+                this.albumCoverSizeExceeded = false;
+                // This method will be called when an album cover image file is added
+                console.log('Album Cover file added:', file);
             }
         },
-        onCoverSubmitted(files, fileList, event) {
-            if (!this.coverSizeExceeded) {
-                this.cover = URL.createObjectURL(files[0].file)
-                this.isCoverSelected = !this.isCoverSelected;
+        onAlbumCoverSubmitted(files, fileList, event) {
+            if (!this.albumCoverSizeExceeded) {
+                this.isAlbumCoverSelected = !this.isAlbumCoverSelected;
             }
         },
-        addChip() {
-            if (this.textInput.trim() !== '') {
-                this.genres.push(this.textInput.trim());
-                this.textInput = '';
-            }
+        onAlbumCoverSuccess(rootFile, file, message, chunk) {
+            this.albumSelectionResponse = JSON.parse(message);
+            // Additional logic if needed
         },
-        removeChip(index) {
-            this.genres.splice(index, 1);
+        onAlbumCoverError(rootFile, file, message, chunk) {
+            console.log('Error uploading album cover:', message);
         },
-        getColorClass(index) {
-            const colorClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-light'];
-            const colorIndex = index % colorClasses.length;
-            return `text-${colorClasses[colorIndex]}`;
+        deleteSong(songId) {
+            axios.delete(`http://localhost:5000/songs/${songId}/manage`)
+                .then(response => {
+                    if (response.status === 200) {
+                        // Assuming you have a way to update the list of songs in your component
+                        this.fetchMusicList();
+                        console.log('Song deleted successfully');
+                    } else {
+                        console.error('Failed to delete song:', response.data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting song:', error.message);
+                });
         },
-        uploadMedia() {
-            const musicUploader = this.musicUploaderRef.uploader
-            const coverUploader = this.coverUploaderRef.uploader
-            console.log("upload", musicUploader)
-            console.log("upload", coverUploader)
-            //      musicUploader.upload()
-            coverUploader.upload()
-
-        },
-        onMusicSuccess(rootFile, file, message, chunk) {
-            console.log("Message", message);
-        },
-        onMusicError(rootFile, file, message, chunk) {
-            console.log("Message", message);
-        },
-        onCoverSuccess(rootFile, file, message, chunk) {
-            console.log("Message", message);
-        },
-        onCoverError(rootFile, file, message, chunk) {
-            console.log("Message", message);
-        },
-        ready() {
-            console.log("Ready event");
-        }
     },
 };
 </script>
