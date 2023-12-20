@@ -559,6 +559,11 @@ vite@^4.4.5:
   optionalDependencies:
     fsevents "~2.3.2"
 
+vue-draggable-next@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/vue-draggable-next/-/vue-draggable-next-2.2.1.tgz#adbe98c74610cca8f4eb63f92042681f96920451"
+  integrity sha512-EAMS1IRHF0kZO0o5PMOinsQsXIqsrKT1hKmbICxG3UEtn7zLFkLxlAtajcCcUTisNvQ6TtCB5COjD9a1raNADw==
+
 vue-picture-cropper@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/vue-picture-cropper/-/vue-picture-cropper-0.7.0.tgz#e9dec1b17542ba6c681a7ba6240282193e101d68"
