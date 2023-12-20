@@ -71,18 +71,18 @@
                         @file-added="onAlbumCoverAdded" @file-success="onAlbumCoverSuccess"
                         @files-submitted="onAlbumCoverSubmitted" @file-error="onAlbumCoverError">
                         <!-- Similar structure to the one in the song modal -->
-                                </uploader>
+                    </uploader>
 
                     <div v-if="isAlbumCoverSelected">
                         <img class="drop-zone" :src="albumCover" alt="Album Cover Preview">
                     </div>
-                                </div>
+                </div>
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" @click="uploadAlbumCover">Add Album</button>
                     <button type="button" class="btn btn-primary" @click="toggleAlbumModal">Close</button>
-                                </div>
-                            </div>
+                </div>
+            </div>
         </Modal>
 
 
@@ -98,9 +98,9 @@
                 <div class="d-flex flex-row">
                     <button style="margin-right: 10px;">Songs</button>
                     <button>Albums</button>
-                                    </div>
+                </div>
                 <!-- Add other navbar items if needed -->
-                                    </div>
+            </div>
 
             <!-- Song List -->
             <div v-if="songs != null" style="padding: 20px">
@@ -182,22 +182,31 @@ export default {
         this.fetchMusicList();
     },
     setup() {
-        const modalActive = ref(null);
-
-        const toggleModal = () => {
-            modalActive.value = !modalActive.value;
-        };
-        const musicUploaderRef = ref(null)
-        const coverUploaderRef = ref(null)
-        onMounted(() => {
-            nextTick(() => {
-                window.wwwwuploader = musicUploaderRef.uploader
-                window.coverUploader = coverUploaderRef.uploader
-            })
-        });
-        return { modalActive, toggleModal, musicUploaderRef, coverUploaderRef };
+        const addSongModalActive = ref(null);
+        const editSongModalActive = ref(null);
+        const albumModalActive = ref(null);
+        return { addSongModalActive, albumModalActive, editSongModalActive };
     },
     methods: {
+        toggleAddSongModal() {
+            this.addSongModalActive = !this.addSongModalActive;
+            if (!this.addSongModalActive) {
+                this.fetchMusicList();
+            }
+        },
+        toggleEditSongModal() {
+            this.editSongModalActive = !this.editSongModalActive;
+            if (!this.editSongModalActive) {
+                this.songToEdit = null;
+            }
+        },
+        toggleAlbumModal() {
+            this.albumModalActive = !this.albumModalActive.value;
+        },
+        editSong(song) {
+            this.songToEdit = song;
+            this.toggleEditSongModal();
+        },
         fetchMusicList() {
             const API_ENDPOINT = 'http://localhost:5000/';
             // Make an API request to fetch songs
@@ -321,10 +330,7 @@ export default {
     margin-top: 20px;
 }
 
-.close {
-    border: 1px solid #fff;
-    background-color: red;
-}
+
 
 .container {}
 
