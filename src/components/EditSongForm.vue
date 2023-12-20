@@ -153,3 +153,12 @@ export default {
 
     };
   },
+  watch: {
+    songToEdit(newSong) {
+      if (newSong) {
+        this.songTitle = newSong.title;
+        this.songLyrics = newSong.lyrics;
+        this.genres = newSong.genres;
+      }
+    }
+  },
