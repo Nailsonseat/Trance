@@ -1,6 +1,6 @@
 from models import Song, Album, Playlist, PlaylistSong, SongsLiked
 from flask_restful import Resource, reqparse, marshal_with, fields
-from flask_security import roles_required, auth_required
+from flask_security import roles_required, auth_required, current_user
 from models import db
 from datetime import datetime
 from resources.fields import song_fields, album_fields
@@ -63,7 +63,7 @@ class PlaylistCreateResource(Resource):
 
 class PlaylistManagementResource(Resource):
     @marshal_with(playlist_fields)
-    @roles_required('user')
+    # @roles_required('user')
     def put(self, playlist_id):
         parser = reqparse.RequestParser()
         parser.add_argument('songs_to_add', type=list,
