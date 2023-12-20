@@ -197,9 +197,31 @@ export default {
             newPlaylistName: '',
         };
     },
-    components: {
-        AudioPlayer
+    beforeMount() {
+        this.updateMusicList();
+        this.updatePlaylistList();
     },
+        updateMusicList() {
+            // Update URL as per your actual API endpoint
+            axios.get('http://localhost:5000/songs')
+                .then(response => {
+                    this.songs = response.data;
+                    this.filteredSongs = this.songs.slice(); // Initial filtered list is all songs
+                    this.audioList = this.generateAudioList(); // Generate initial audio list
+                })
+                .catch(error => {
+                    console.error('Error fetching songs:', error);
+                });
+        },
+        updatePlaylistList() {
+            axios.get('http://localhost:5000/playlists')
+                .then(response => {
+                    this.playlists = response.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching playlists:', error);
+                });
+        },
 };
 </script>
 
