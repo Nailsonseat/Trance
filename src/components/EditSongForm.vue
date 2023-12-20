@@ -162,3 +162,164 @@ export default {
       }
     }
   },
+  methods: {
+    addGenre() {
+      if (this.genreInput.trim() !== '') {
+        this.genres.push(this.genreInput.trim());
+        this.genreInput = '';
+      }
+    },
+    removeGenre(index) {
+      this.genres.splice(index, 1);
+    },
+    getGenreColor(index) {
+      const colorClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-light'];
+      const colorIndex = index % colorClasses.length;
+      return `text-${colorClasses[colorIndex]}`;
+    },
+    onMusicReplacerAdded(file) {
+      if (file.size > 20 * 1024 * 1024) {
+        file.ignored = true;
+        this.clearMusicReplacerSection();
+        alert('Maximum file size allowed is 20MB.');
+      } else if (!file.name.toLowerCase().endsWith('.mp3')) {
+        file.ignored = true;
+        this.clearMusicReplacerSection();
+        alert('Please upload an MP3 file.');
+      } else {
+        this.isMusicReplacerSelected = !this.isMusicReplacerSelected;
+      }
+    },
+    onMusicReplacerSuccess(rootFile, file, message, chunk) {
+      this.replacerMusic = URL.createObjectURL(file.file);
+      if (this.isCoverReplacerSelected) {
+        this.uploadCoverReplacer();
+      } else {
+        this.updateMusicEntry();
+      }
+    },
+    onMusicReplacerError(rootFile, file, message, chunk) {
+      console.log('Message', message);
+    },
+    clearMusicReplacerSection() {
+      this.isMusicReplacerSelected = false;
+      this.replacerMusic = null;
+      this.musicReplacerRef.uploader.files.forEach(file => {
+        file.cancel();
+      });
+    },
+    onMusicReplacerSubmitted(files, fileList, event) {
+      this.isMusicReplacerSelected = true;
+    },
+
+    onCoverReplacerSubmitted(files, fileList, event) {
+
+      this.replacerCover = URL.createObjectURL(files[0].file);
+      this.isCoverReplacerSelected = true;
+    },
+    onCoverReplacerAdded(file) {
+      const allowedExtensions = ['jpg', 'jpeg', 'png'];
+      const extension = file.name.split('.').pop().toLowerCase();
+
+      if (file.size > 20 * 1024 * 1024) {
+        file.ignored = true;
+        this.clearCoverReplacerSection();
+        alert('Maximum file size allowed is 20MB.');
+      } else if (!allowedExtensions.includes(extension)) {
+        file.ignored = true;
+        this.clearCoverReplacerSection();
+        alert('Please upload a valid image file (JPG, JPEG, PNG).');
+      } else {
+        this.isCoverReplacerSelected = !this.isCoverReplacerSelected;
+      }
+    },
+    onCoverReplacerSuccess(rootFile, file, message, chunk) {
+      this.updateMusicEntry();
+    },
+    onCoverReplacerError(rootFile, file, message, chunk) {
+      console.log('Message', message);
+    },
+    clearCoverReplacerSection() {
+      this.isCoverReplacerSelected = false;
+      this.replacerCover = null;
+      this.coverReplacerRef.uploader.files.forEach(file => {
+        file.cancel();
+      });
+    },
+    validateTitle() {
+      const titleRegex = /^[a-zA-Z0-9\s]+$/;
+      return titleRegex.test(this.songTitle);
+    },
+    validateGenres() {
+      const genreRegex = /^[a-zA-Z0-9\s]+$/;
+      return this.genres.every(genre => genreRegex.test(genre));
+    },
+    updateSong() {
+      if (this.isMusicReplacerSelected || this.isCoverReplacerSelected) {
+
+      }
+
+    },
+
+    closeModal() {
+      this.clearMusicReplacerSection();
+      this.clearCoverReplacerSection();
+      this.songTitle = '';
+      this.songLyrics = '';
+      this.genres = [];
+      this.isMusicSelected = false;
+      this.isCoverSelected = false;
+      this.$emit('close-modal');
+    },
+    updateMusicEntry() {
+      const API_ENDPOINT = 'http://localhost:5000/';
+      const requestData = {
+        title: this.songTitle,
+        artist: 'aadarsh', // Replace with actual artist data
+        lyrics: this.songLyrics,
+        album_id: null, // Replace with actual album ID
+        filepath: this.replacerMusic,
+        coverpath: this.replacerCover,
+        hours: null, // Replace with actual duration data
+        minutes: null,
+        seconds: null,
+        genres: this.genres,
+      };
+
+      axios.put(API_ENDPOINT + 'songs/update/' + this.songToEdit.id + '/manage', requestData)
+        .then(response => {
+          console.log('Song updated successfully:', response);
+          this.toggleEditSongModal();
+        })
+        .catch(error => {
+          console.error('Error updating song:', error);
+        });
+    },
+  },
+};
+</script>
+
+
+
+
+<style scoped>
+.drop-zone {
+  width: 200px;
+  height: 200px;
+  border: 2px dashed #ccc;
+  padding-right: 0%;
+  border-radius: 5px;
+  align-self: center;
+}
+
+.clear-button {
+  width: 200px;
+  align-self: center;
+}
+
+
+.close {
+  border: 1px solid #fff;
+  background-color: red;
+}
+</style>
