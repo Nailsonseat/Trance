@@ -150,3 +150,22 @@ export default {
 
         }
     },
+    methods: {
+        addGenre() {
+            if (this.genreInput.trim() !== '') {
+                this.genres.push(this.genreInput.trim());
+                this.genreInput = '';
+            }
+        },
+        removeGenre(index) {
+            this.genres.splice(index, 1);
+        },
+        getGenreColor(index) {
+            const colorClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-light'];
+            const colorIndex = index % colorClasses.length;
+            return `text-${colorClasses[colorIndex]}`;
+        },
+
+
+
+
