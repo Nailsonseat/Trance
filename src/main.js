@@ -6,16 +6,16 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import uploader from "vue-simple-uploader";
 import "./style.css";
 
-const tokenKey = "auth-token";
-router.beforeEach((to, from, next) => {
-  if (
-    to.name !== "UserAuth" &&
-    to.name !== "CreatorAuth" &&
-    !localStorage.getItem("auth-token")
-  )
-    next({ name: "UserAuth" });
-  else next();
-});
+// const tokenKey = "auth-token";
+// router.beforeEach((to, from, next) => {
+//   if (
+//     to.name !== "UserAuth" &&
+//     to.name !== "CreatorAuth" &&
+//     !localStorage.getItem("auth-token")
+//   )
+//     next({ name: "UserAuth" });
+//   else next();
+// });
 
 const app = createApp(App);
 app.use(router);
