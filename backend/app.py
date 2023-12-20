@@ -2,10 +2,11 @@ from flask_security import Security, SQLAlchemyUserDatastore, hash_password, log
 from models import user_datastore
 from __init__ import app, db, api
 from resources.miscellaneous import AdminDashboardResource, FlagSongResource
-from resources.song_resources import SongResource, SongListResource, SongCreateResource, SongManagementResource, SongUploadResource
+from resources.song_resources import SongResource, SongListResource, SongCreateResource, SongManagementResource
 from resources.album_resources import AlbumListResource, AlbumCreateResource, AlbumManagementResource, AlbumResource
-from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource
+from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource, PlaylistListResource
 from resources.cover_resources import CoverUploadResource
+from resources.song_upload_resources import SongUploadResource, SongReplacementResource
 from auth.auth import auth_bp
 
 
@@ -39,6 +40,7 @@ if __name__ == '__main__':
 
     api.add_resource(SongListResource, '/songs')
     api.add_resource(AlbumListResource, '/albums')
+    api.add_resource(PlaylistListResource, '/playlists')
 
     api.add_resource(PlaylistCreateResource, '/playlist/create')
     api.add_resource(PlaylistManagementResource, '/playlist/<int:playlist_id>')
@@ -46,8 +48,11 @@ if __name__ == '__main__':
 
     api.add_resource(SongResource, '/song/<int:song_id>')
     api.add_resource(SongCreateResource, '/songs/create')
-    api.add_resource(SongUploadResource, '/songs/upload')
+
     api.add_resource(CoverUploadResource, '/covers/upload')
+    api.add_resource(SongUploadResource, '/songs/upload')
+
+    api.add_resource(SongReplacementResource, '/songs/<int:song_id>/replace')
     api.add_resource(SongManagementResource, '/songs/<int:song_id>/manage')
 
     api.add_resource(AlbumResource, '/album/<int:album_id>')
