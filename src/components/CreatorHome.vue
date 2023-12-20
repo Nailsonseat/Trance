@@ -143,49 +143,43 @@
 
 <script>
 import Modal from "../components/Modal.vue";
-import { ref, onMounted, nextTick } from "vue";
+import AddSongForm from '../components/AddSongForm.vue';
+import EditSongForm from '../components/EditSongForm.vue';
+import { ref } from "vue";
+import axios from 'axios'
 import VuePictureCropper, { cropper } from 'vue-picture-cropper'
 
 
 export default {
     data() {
         return {
-            songTitle: '',
-            songLyrics: '',
-            selectedCover: null,
-            selectedMusic: '',
-            uploadStatus: '',
-            musicSizeExceeded: false,
-            headers: {
-                'Content-type': 'audio/mpeg',
-                'Accept': 'audio/mpeg'
-            },
-            isMusicSelected: false,
-            musicUploaderOptions: {
-                target: '//localhost:5000/songs/upload',
+            albumTitle: '',
+            albumSelectionResponse: null,
+            isAlbumCoverSelected: false,
+            albumCoverSizeExceeded: false,
+            albumCover: null,
+            albumCoverUploaderOptions: {
+                target: '//localhost:5000/albums/upload',
                 testChunks: false,
-                chunkSize: 1 * 1024 * 1024 * 20,
-                accept: 'audio/*',
-                singleFile: true,
-            },
-
-            isCoverSelected: false,
-            coverSizeExceeded: false,
-            coverUploaderOptions: {
-                target: '//localhost:5000/covers/upload',
-                testChunks: false,
-
                 accept: 'image/*',
                 singleFile: true,
             },
-            cover: null,
-            textInput: '',
-            genres: [],
+
+
+
+
+            songs: [],
+            songToEdit: null
         };
     },
     components: {
         Modal,
         VuePictureCropper,
+        AddSongForm,
+        EditSongForm
+    },
+    beforeMount() {
+        this.fetchMusicList();
     },
     setup() {
         const modalActive = ref(null);
@@ -204,20 +198,16 @@ export default {
         return { modalActive, toggleModal, musicUploaderRef, coverUploaderRef };
     },
     methods: {
-        onMusicAdded(file) {
-            if (file.size > 20 * 1024 * 1024) {
-                this.musicSizeExceeded = true;
-                file.ignored = true;
-            } else {
-                this.musicSizeExceeded = false;
-                // This method will be called when a file is added
-                console.log('File added:', file);
-            }
-        },
-        onMusicSubmitted(files, fileList, event) {
-            if (!this.musicSizeExceeded) {
-                this.isMusicSelected = !this.isMusicSelected;
-            }
+        fetchMusicList() {
+            const API_ENDPOINT = 'http://localhost:5000/';
+            // Make an API request to fetch songs
+            axios.get(API_ENDPOINT + 'songs')  // Update the URL as per your actual API endpoint
+                .then(response => {
+                    this.songs = response.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching songs:', error);
+                });
         },
         onCoverAdded(file) {
             if (file.size > 20 * 1024 * 1024) {
