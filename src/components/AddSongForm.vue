@@ -335,3 +335,26 @@ export default {
 
 </script>
 
+
+
+<style scoped>
+.drop-zone {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #ccc;
+    padding-right: 0%;
+    border-radius: 5px;
+    align-self: center;
+}
+
+.clear-button {
+    width: 200px;
+    align-self: center;
+}
+
+
+.close {
+    border: 1px solid #fff;
+    background-color: red;
+}
+</style>
