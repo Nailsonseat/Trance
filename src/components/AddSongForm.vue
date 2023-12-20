@@ -210,3 +210,44 @@ export default {
             console.log("Message", message);
         },
 
+
+
+
+        onCoverAdded(file) {
+            const allowedExtensions = ['jpg', 'jpeg', 'png'];
+            const extension = file.name.split('.').pop().toLowerCase();
+
+            if (file.size > 20 * 1024 * 1024) {
+                file.ignored = true;
+                // Clear the cover upload section and show an alert
+                this.clearCoverUploadSection();
+                alert('Maximum file size allowed is 20MB.');
+            } else if (!allowedExtensions.includes(extension)) {
+                file.ignored = true;
+                // Clear the cover upload section and show an alert
+                this.clearCoverUploadSection();
+                alert('Please upload a valid image file (JPG, JPEG, PNG).');
+            } else {
+
+                this.isCoverSelected = !this.isCoverSelected;
+                // This method will be called when a cover image file is added
+                console.log('Cover file added:', file);
+            }
+        },
+        onCoverSubmitted(files, fileList, event) {
+            if (files[0]) {
+                this.cover = URL.createObjectURL(files[0].file)
+            }
+        },
+        uploadCover() {
+            const albumCoverUploader = this.coverUploaderRef.uploader;
+            albumCoverUploader.upload();
+        },
+        onCoverSuccess(rootFile, file, message, chunk) {
+            console.log("Cover Sucessfully Uploaded : ", message);
+            this.coverSelectionResponse = JSON.parse(message)
+            this.createMusicEntry();
+        },
+        onCoverError(rootFile, file, message, chunk) {
+            console.log("Message", message);
+        },
