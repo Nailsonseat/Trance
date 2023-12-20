@@ -251,3 +251,87 @@ export default {
         onCoverError(rootFile, file, message, chunk) {
             console.log("Message", message);
         },
+
+
+        startUpload() {
+            if (!this.isMusicSelected) {
+                alert('No Mp3 file selected');
+                return;
+            }
+
+
+            if (!this.validateTitle() || this.songTitle == '') {
+                alert('Please enter a valid title (only alphanumeric characters and spaces allowed).');
+                return;
+            }
+
+            if (!this.validateGenres()) {
+                alert('Please enter valid genres (only alphanumeric characters and spaces allowed).');
+                return;
+            }
+
+
+            this.uploadMusic()
+            // Upload music -> Upload Cover -> Create Entry
+        },
+
+        closeModal() {
+            this.clearMusicUploadSection();
+            this.clearCoverUploadSection();
+            this.songTitle = '';
+            this.songLyrics = '';
+            this.genres = [];
+            this.isMusicSelected = false;
+            this.isCoverSelected = false;
+            this.$emit('close-modal');
+        },
+        clearMusicUploadSection() {
+            this.isMusicSelected = false;
+            this.musicUploaderRef.uploader.files.forEach(file => {
+                file.cancel();
+            });
+        },
+        clearCoverUploadSection() {
+            this.isCoverSelected = false;
+            this.coverUploaderRef.uploader.files.forEach(file => {
+                file.cancel();
+            });
+        },
+        validateTitle() {
+            const titleRegex = /^[a-zA-Z0-9\s]+$/;
+            return titleRegex.test(this.songTitle);
+        },
+
+        validateGenres() {
+            const genreRegex = /^[a-zA-Z0-9\s]+$/;
+            return this.genres.every(genre => genreRegex.test(genre));
+        },
+        createMusicEntry() {
+            const API_ENDPOINT = 'http://localhost:5000/';
+            const requestData = {
+                title: this.songTitle,
+                artist: 'aadarsh',
+                lyrics: this.songLyrics,
+                album_id: null,
+                filepath: this.musicSelectionResponse.file_path,
+                coverpath: this.coverSelectionResponse ? this.coverSelectionResponse.cover_path : null,
+                hours: this.musicSelectionResponse.duration.hours,
+                minutes: this.musicSelectionResponse.duration.minutes,
+                seconds: this.musicSelectionResponse.duration.seconds,
+                genres: this.genres,
+            };
+            axios.post(API_ENDPOINT + 'songs/create', requestData)
+                .then(response => {
+                    console.log('Song created successfully:', response);
+                    this.closeModal();
+                })
+                .catch(error => {
+                    console.error('Error creating song:', error);
+                });
+        },
+
+    }
+}
+
+</script>
+
