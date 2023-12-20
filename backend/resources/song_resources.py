@@ -84,11 +84,20 @@ class SongCreateResource(Resource):
                             help='Title is required')
         parser.add_argument('artist', type=str, required=True,
                             help='Artist is required')
-        parser.add_argument('lyrics', type=str, required=True,
-                            help='Lyrics are required')
+        parser.add_argument('lyrics', type=str, help='Lyrics are optional')
         parser.add_argument('album_id', type=int, help='Album ID')
         parser.add_argument('filepath', type=str,
                             help='Path where mp3 is stored')
+        parser.add_argument('coverpath', type=str,
+                            help='Path where cover image is stored')
+        parser.add_argument('genres', type=list, location='json',
+                            required=True, help='Genres are required')
+        parser.add_argument('hours', type=int,
+                            help='Duration (hours)', required=True)
+        parser.add_argument('minutes', type=int,
+                            help='Duration (minutes)', required=True)
+        parser.add_argument('seconds', type=int,
+                            help='Duration (seconds)', required=True)
         args = parser.parse_args()
 
         # Fill in the created_at with the current time
@@ -101,25 +110,37 @@ class SongCreateResource(Resource):
             lyrics=args['lyrics'],
             album_id=args['album_id'],
             filepath=args['filepath'],
-            created_at=args['created_at']
+            coverpath=args['coverpath'],
+            created_at=args['created_at'],
+            hours=args['hours'],
+            minutes=args['minutes'],
+            seconds=args['seconds'],
         )
 
         db.session.add(new_song)
         db.session.commit()
 
         # Handling genre assignment
-        genres = request.json.get('genres', [])
-        for genre_name in genres:
+
+        for genre_name in args['genres']:
+            # Check if the genre already exists
             genre = Genres.query.filter_by(name=genre_name).first()
+
             if genre is None:
+                # If not, create a new genre
                 genre = Genres(name=genre_name)
                 db.session.add(genre)
                 db.session.commit()
 
-            song_genre = SongGenre(song_id=new_song.id, genre_id=genre.id)
-            db.session.add(song_genre)
+            # Check if the genre is already assigned to the song
+            existing_assignment = SongGenre.query.filter_by(
+                song_id=new_song.id, genre_id=genre.id).first()
 
-        db.session.commit()
+            if existing_assignment is None:
+                # If not, add the genre to the song
+                song_genre = SongGenre(song_id=new_song.id, genre_id=genre.id)
+                db.session.add(song_genre)
+                db.session.commit()
 
         return new_song, 201
 
