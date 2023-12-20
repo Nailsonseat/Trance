@@ -156,9 +156,6 @@
             </div>
         </div>
 
-
-
-        <!-- Audio Player -->
         <div class="audio-player">
             <audio-player ref="audioPlayer" :audio-list="audioList.map(elm => elm.url)" theme-color="#42b883"
                 v-model:shuffleOn="shuffleOn" />
@@ -201,6 +198,7 @@ export default {
         this.updateMusicList();
         this.updatePlaylistList();
     },
+    methods: {
         updateMusicList() {
             // Update URL as per your actual API endpoint
             axios.get('http://localhost:5000/songs')
@@ -213,6 +211,49 @@ export default {
                     console.error('Error fetching songs:', error);
                 });
         },
+        generateAudioList() {
+            let audioList = this.songs.map(song => ({
+                name: song.title,
+                url: song.filepath,
+            }));
+
+            if (this.shuffleOn) {
+                const currentIndex = audioList.findIndex(song => song.name === this.currentAudioName);
+                const shuffledSongs = [...audioList.slice(currentIndex + 1), ...audioList.slice(0, currentIndex + 1)];
+                audioList = [...audioList.slice(0, currentIndex + 1), ...shuffledSongs];
+            }
+
+            return audioList;
+        },
+        removeFromQueue(item) {
+            // Remove item from both audioList and `queue` draggable group
+            this.audioList.splice(this.audioList.indexOf(item), 1);
+            draggable.removeFromGroup('queue', item);
+        },
+        filterFunction(value) {
+            this.sortBy = value;
+            // Update filteredSongs based on chosen criteria (adjust logic based on your data structure)
+            this.filteredSongs = this.songs.slice().sort((a, b) => {
+                if (value === 'title') return a.title.localeCompare(b.title);
+                else if (value === 'artist') return a.artist.localeCompare(b.artist);
+                // Add logic for other sort criteria
+            });
+        },
+        searchByChange(value) {
+            this.searchBy = value.toLowerCase();
+
+            // logic
+        },
+
+        switchToPane(value) {
+            if (value === 'music') {
+                this.pane = value;
+                this.updateMusicList();
+            } else if (value == 'playlists') {
+                this.pane = value;
+                this.updatePlaylistList();
+            } else if (value == 'albums') { }
+        },
         updatePlaylistList() {
             axios.get('http://localhost:5000/playlists')
                 .then(response => {
@@ -222,11 +263,85 @@ export default {
                     console.error('Error fetching playlists:', error);
                 });
         },
+        createNewPlaylist(name) {
+            // Implement logic to create a new playlist
+            if (name) {
+                axios.post('http://localhost:5000/playlist/create', {
+                    name: name,
+                    songs: [],  // You may provide an initial list of song IDs if needed
+                })
+                    .then(response => {
+                        console.log(response)
+                        //this.playlists.push(response.data);
+                        alert('Playlist created successfully!');
+                    })
+                    .catch(error => {
+                        console.error('Error creating playlist:', error);
+                        alert('Error creating playlist. Please try again.');
+                    });
+            }
+        },
+        updateSongPlaylists() {
+            // Update the playlists for the current song on the server
+            const selectedPlaylists = this.selectedPlaylists.map(id => ({ id }));
+            axios.put(`http://localhost:5000/playlists/${this.currentSongId}`, {
+                songs_to_add: selectedPlaylists,
+                songs_to_remove: this.playlists
+                    .filter(playlist => !this.selectedPlaylists.includes(playlist.id))
+                    .map(playlist => ({ id: playlist.id })),
+            })
+                .then(response => {
+                    // Optionally handle the response
+                    console.log('Playlists updated successfully:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error updating playlists:', error);
+                })
+                .finally(() => {
+                    this.closePlaylistModal();
+                });
+        },
+        formatCreatedAt(timestamp) {
+            // Implement your own formatting logic
+            return new Date(timestamp).toLocaleDateString();
+        },
+        toggleAddPlaylistModal() {
+            this.addPlaylistModalActive = !this.addPlaylistModalActive;
+            // Optionally, you can reset the new playlist name when closing the modal
+            if (!this.addPlaylistModalActive) {
+                this.newPlaylistName = '';
+            }
+        },
+        togglePlaylistModal(song) {
+            if (song) {
+                this.currentSongId = song.id;
+                this.selectedPlaylists = this.playlists
+                    .filter(playlist => playlist.songs.some(s => s.id === song.id))
+                    .map(playlist => playlist.id);
+            }
+            this.isPlaylistModalActive = !this.isPlaylistModalActive;
+        },
+    }
 };
 </script>
 
 <style scoped>
 /* Your component-specific styles go here */
+.song-item {
+    height: 90px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+}
+
+.cover-pic {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+}
+
+.song-details {
+    flex: 1;
+}
 
 .audio-player {
     position: fixed;
