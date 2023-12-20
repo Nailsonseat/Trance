@@ -101,3 +101,55 @@
     </div>
   </div>
 </template>
+
+
+
+<script>
+import axios from 'axios';
+import { ref } from 'vue';
+
+export default {
+  props: {
+    songToEdit: {
+      required: true,
+    },
+  },
+  setup() {
+    const musicReplacerRef = ref(null);
+    const coverReplacerRef = ref(null);
+
+    return { musicReplacerRef, coverReplacerRef };
+  },
+  data() {
+    return {
+      songTitle: this.songToEdit ? this.songToEdit.title : '',
+      songLyrics: this.songToEdit ? this.songToEdit.lyrics : '',
+      genres: this.songToEdit ? this.songToEdit.genres : [],
+      genreInput: '',
+      isMusicReplacerSelected: false,
+      isCoverReplacerSelected: false,
+
+      replacerMusic: null,
+      replacerCover: null,
+
+
+      musicReplacerOptions: {
+        target: '//localhost:5000/songs/upload',
+        testChunks: false,
+        chunkSize: 1 * 1024 * 1024 * 20,
+        accept: 'audio/*',
+        singleFile: true,
+        uploadMethod: 'PUT',
+      },
+
+
+      coverReplacerOptions: {
+        target: '//localhost:5000/covers/upload',
+        testChunks: false,
+        accept: 'image/*',
+        singleFile: true,
+        uploadMethod: 'PUT'
+      },
+
+    };
+  },
