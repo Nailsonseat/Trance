@@ -1,16 +1,16 @@
 <template>
     <div>
         <div class="container mt-5">
-            <h2 class="text-start display-4">Trance Creator Studio</h2>
+            <h2 class="text-start display-3">Trance Creator Studio</h2>
             <div class="functionality-section mt-4">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-4 mb-3 mx-auto">
                             <div class="custom-container mt-5 d-flex flex-column justify-content-end">
                                 <div class="w-100 h-100">
-                                    <span style="font-size: large;">Total Songs</span>
+                                    <span class="fs-1">Total Songs {{ this.songs.length }}</span>
                                 </div>
-                                <button @click="toggleModal" class="btn btn-success btn-block">
+                                <button @click="toggleAddSongModal" class="btn btn-success btn-block">
                                     Add a Song
                                 </button>
                                 <button @click="createSong" class="btn btn-success btn-block">
@@ -20,7 +20,9 @@
                         </div>
                         <div class="col-md-4 mb-3 mx-auto">
                             <div class="custom-container mt-5 d-flex flex-column justify-content-end">
-                                <span>Total albums</span>
+                                <div class="w-100 h-100">
+                                    <span class="fs-1">Total Songs {{ this.songs.length }}</span>
+                                </div>
                                 <button @click="editSong" class="btn btn-warning btn-block">
                                     Add an Album
                                 </button>
@@ -34,115 +36,108 @@
             </div>
         </div>
 
-        <Modal @close="toggleModal" :modalActive="modalActive">
+        <Modal @close="toggleAddSongModal" :modalActive="addSongModalActive">
+            <AddSongForm @close-modal="toggleAddSongModal" ref="addSongFormRef">
+            </AddSongForm>
+        </Modal>
+
+        <Modal @close="toggleEditSongModal" :modalActive="editSongModalActive">
+            <EditSongForm @close-modal="toggleEditSongModal" :songToEdit="songToEdit" ref="editSongFormRef"></EditSongForm>
+        </Modal>
+
+
+        <Modal @close="toggleAlbumModal" :modalActive="albumModalActive">
+            <!-- Modal Content for Adding an Album -->
             <div class="position-absolute top-50 start-50 translate-middle modal-content">
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title fs-4">Add a Song</h5>
-                    <button type="button" class="close" @click="toggleModal" aria-label="Close">
+                    <h5 class="modal-title fs-4">Add an Album</h5>
+                    <button type="button" class="close" @click="toggleAlbumModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <!-- Modal Body -->
                 <div class="modal-body">
-                    <div class="row h-100">
+                    <!-- Add your fields (title, cover, etc.) component or content here -->
+                    <label class="py-3" for="albumTitle">Album Name:</label>
+                    <input type="text" id="albumTitle" v-model="albumTitle" class="form-control bg-transparent text-white">
 
-                        <!-- Left section for upload song and cover pic -->
-                        <div class="col w-50" style="border-right: 1px solid #ffffff;">
-                            <div class="modal-left-section d-flex flex-column justify-content-center h-100">
-                                <!-- Add your upload song and cover pic components or content here -->
-                                <label class="my-4 fs-4" for="songFile">Upload Song:</label>
+                    <label class="py-3" for="albumCover">Upload Album Cover:</label>
+                    <!-- Add your upload album cover image components here -->
+                    <!-- Similar to how it's done for adding a song's cover -->
 
-                                <uploader ref="musicUploaderRef" :options="musicUploaderOptions" :autoStart="false"
-                                    class="drop-zone d-flex flex-column flex-column align-items-center justify-content-center"
-                                    :style="{ 'padding-right': isMusicSelected ? '28px' : '0' }" @file-added="onMusicAdded"
-                                    @file-success="onMusicSuccess" @files-submitted="onMusicSubmitted"
-                                    @file-error="onMusicError">
-                                    <uploader-drop v-if="!isMusicSelected"
-                                        class="d-flex h-100 w-100 flex-column align-items-center justify-content-center">
-                                        <span>Drop mp3 file</span>
-                                        <span class="my-1">Or</span>
-                                        <uploader-btn class="btn btn-outline-light">Select MP3 file</uploader-btn>
-                                    </uploader-drop>
-                                    <uploader-list v-show="!musicSizeExceeded"></uploader-list>
-                                    <span v-show="musicSizeExceeded">Maximum file size allowed 20mb</span>
+                    <uploader ref="albumCoverUploaderRef" :options="albumCoverUploaderOptions" :autoStart="false"
+                        class="drop-zone" :style="{ 'padding-right': isAlbumCoverSelected ? '28px' : '0' }"
+                        @file-added="onAlbumCoverAdded" @file-success="onAlbumCoverSuccess"
+                        @files-submitted="onAlbumCoverSubmitted" @file-error="onAlbumCoverError">
+                        <!-- Similar structure to the one in the song modal -->
                                 </uploader>
 
-                                <label class="my-4 fs-4" for="coverPic">Upload Cover Picture:</label>
-
-                                <!-- Add your upload cover image components here -->
-                                <div class=" d-flex flex-column flex-column align-items-center justify-content-center"
-                                    v-show="!isCoverSelected">
-                                    <uploader ref="coverUploaderRef" :options="coverUploaderOptions" :autoStart="false"
-                                        class="drop-zone" :style="{ 'padding-right': isCoverSelected ? '28px' : '0' }"
-                                        @file-added="onCoverAdded" @file-success="onCoverSuccess"
-                                        @files-submitted="onCoverSubmitted" @file-error="onCoverError">
-                                        <uploader-drop
-                                            class="d-flex h-100 w-100 flex-column align-items-center justify-content-center">
-                                            <span>Drop image file</span>
-                                            <span class="my-1">Or</span>
-                                            <uploader-btn class="btn btn-outline-light">Select image file</uploader-btn>
-                                        </uploader-drop>
-                                        <uploader-list v-show="!coverSizeExceeded"></uploader-list>
-                                        <span v-show="coverSizeExceeded">Maximum file size allowed 20mb</span>
-                                    </uploader>
+                    <div v-if="isAlbumCoverSelected">
+                        <img class="drop-zone" :src="albumCover" alt="Album Cover Preview">
+                    </div>
                                 </div>
-                                <div v-if="isCoverSelected">
-                                    <img class="drop-zone" :src="cover" alt="Hello">
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="uploadAlbumCover">Add Album</button>
+                    <button type="button" class="btn btn-primary" @click="toggleAlbumModal">Close</button>
                                 </div>
                             </div>
-                        </div>
+        </Modal>
 
 
 
 
+        <div
+            style="width: 90%; height: 1000px; border: 1px solid #ffffff; margin: 100px; border-radius: 20px; position: relative;">
 
-                        <!-- Right section for song name and lyrics -->
-                        <div class="col w-50">
-                            <div class="modal-right-section d-flex flex-column justify-content-center h-100 px-3">
-                                <!-- Add your fields (title, lyrics, etc.) component or content here -->
-                                <label class="py-3" for="songTitle">Title:</label>
-                                <input type="text" id="songTitle" v-model="songTitle"
-                                    class="form-control bg-transparent text-white">
-
-                                <label class="py-3" for="songLyrics">Lyrics:</label>
-                                <textarea id="songLyrics" v-model="songLyrics"
-                                    class="form-control bg-transparent text-white"></textarea>
-
-                                <label class="py-3" for="songTitle">Genres:</label>
-                                <div>
-                                    <div class="input-group mb-3">
-                                        <input v-model="textInput" @keyup.enter="addChip" @keyup.space="addChip" type="text"
-                                            class="form-control bg-transparent text-white"
-                                            placeholder="Type and press Enter...">
+            <!-- Navbar-like layout -->
+            <div
+                style="display: flex; padding: 20px; background-color: #333; border-top-left-radius: 20px; border-top-right-radius: 20px; color: #fff;">
+                <button style="margin-right: auto;">Sort By</button>
+                <div class="d-flex flex-row">
+                    <button style="margin-right: 10px;">Songs</button>
+                    <button>Albums</button>
+                                    </div>
+                <!-- Add other navbar items if needed -->
                                     </div>
 
-                                    <div class="mt-3">
-                                        <span v-for="(chip, index) in genres" :key="index"
-                                            :class="['badge', 'rounded-pill', getColorClass(index), 'mr-2', 'ps-3', 'm-1']">
-                                            <span class="d-flex align-items-center fs-6 fw-light">{{ chip }}
-                                                <button type="button" @click="removeChip(index)"
-                                                    class="p-1 fs-5 text-white bg-transparent"
-                                                    aria-label="Close">&times;</button>
-                                            </span>
-                                        </span>
-                                    </div>
+            <!-- Song List -->
+            <div v-if="songs != null" style="padding: 20px">
+                <div v-for="song in songs" :key="song.id" class="song-item d-flex border">
+                    <!-- Cover Pic -->
+                    <img :src="song.coverpath" alt="Cover" class="cover-pic align-self-center ms-3" />
 
-                                </div>
-                            </div>
+                    <!-- Song Details -->
+                    <div class="song-details d-flex align-items-center">
+                        <!-- Song Name -->
+                        <h3>{{ song.title }}</h3>
+
+                        <!-- Album -->
+                        <p>{{ song.album }}</p>
+
+                        <!-- Duration -->
+                        <p class="mx-3">
+                            {{ song.hours > 0 ? song.hours + 'h ' : '' }} {{ song.minutes }}m {{ song.seconds }}s
+                        </p>
+                        <div class="ms-auto">
+                            <button @click="editSong(song)" class="btn btn-info me-3">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <!-- Delete Button -->
+                            <button @click="deleteSong(song.id)" class="delete-button me-3">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-
-
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="uploadMedia">Add Song</button>
-                    <button type="button" class="btn btn-primary" @click="toggleModal">Close</button>
-                </div>
-
             </div>
-        </Modal>
+
+            <!-- Rest of your content goes here -->
+
+        </div>
+
+
     </div>
 </template>
 
