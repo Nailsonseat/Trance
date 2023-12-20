@@ -7,6 +7,13 @@ from resources.fields import song_fields, album_fields
 from resources.fields import playlist_fields
 
 
+class PlaylistListResource(Resource):
+    @marshal_with(playlist_fields)
+    def get(self):
+        playlists = Playlist.query.all()
+        return playlists
+
+
 class PlaylistCreateResource(Resource):
     @roles_required('user')
     @marshal_with(playlist_fields)
