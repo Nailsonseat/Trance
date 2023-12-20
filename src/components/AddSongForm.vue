@@ -169,3 +169,44 @@ export default {
 
 
 
+        onMusicAdded(file) {
+            if (file.size > 20 * 1024 * 1024) {
+                file.ignored = true;
+                // Clear the music upload section and show an alert
+                this.clearMusicUploadSection();
+                alert('Maximum file size allowed is 20MB.');
+            } else if (!file.name.toLowerCase().endsWith('.mp3')) {
+
+                file.ignored = true;
+                // Clear the music upload section and show an alert
+                this.clearMusicUploadSection();
+                alert('Please upload an MP3 file.');
+            } else {
+                this.isMusicSelected = !this.isMusicSelected;
+                // This method will be called when a file is added
+                console.log('File added:', file);
+            }
+        },
+        onMusicSubmitted(files, fileList, event) {
+
+            this.isMusicSelected = true;
+
+        },
+        uploadMusic() {
+            const musicUploader = this.musicUploaderRef.uploader
+            musicUploader.upload()
+        },
+        onMusicSuccess(rootFile, file, message, chunk) {
+            console.log("Music Sucessfully Uploaded : ", message);
+            this.musicSelectionResponse = JSON.parse(message);
+            if (this.isCoverSelected) {
+                this.uploadCover();
+            } else {
+                this.createMusicEntry()
+            }
+
+        },
+        onMusicError(rootFile, file, message, chunk) {
+            console.log("Message", message);
+        },
+
