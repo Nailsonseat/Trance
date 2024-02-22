@@ -37,8 +37,8 @@
                             </div>
 
                             <form class="d-flex" role="search">
-                                <input class="form-control me-2" type="search" :placeholder="'Search by ' + searchBy"
-                                    aria-label="Search">
+                                <input v-model="query" class="form-control me-2" type="search"
+                                    :placeholder="'Search by ' + searchBy" aria-label="Search">
                                 <!-- Example split danger button -->
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-info">Search</button>
@@ -47,11 +47,11 @@
                                         <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><button @click="searchByChange('Title')"
+                                        <li><button @click="searchBy = 'title'"
                                                 class="w-100 bg-white text-dark">Title</button></li>
-                                        <li><button @click="searchByChange('Artist')"
+                                        <li><button @click="searchBy = 'artist'"
                                                 class="w-100 bg-white text-dark">Artist</button></li>
-                                        <li><button @click="searchByChange('Genre')"
+                                        <li><button @click="searchBy = 'genres'"
                                                 class="w-100 bg-white text-dark">Genre</button></li>
                                     </ul>
                                 </div>
@@ -60,35 +60,17 @@
 
                         </div>
 
+                        <Modal v-if="playListToEdit != null" @close="toggleAssignPlaylistModal"
+                            :modalActive="assignPlaylistModalActive">
+                            <AssignPlaylistForm @close-modal="toggleAssignPlaylistModal" ref="assignPlaylistFormRef"
+                                :songs="songs" :playlist-id="playListToEdit">
+                            </AssignPlaylistForm>
+                        </Modal>
+
+
                         <!-- Flexible section _-->
                         <div v-if="pane === 'music'" class="mb-auto h-100">
 
-                            <Modal @close="togglePlaylistModal" :modalActive="isPlaylistModalActive">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Manage Playlists</h5>
-                                            <button type="button" class="btn-close" @click="togglePlaylistModal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div v-for="playlist in playlists" :key="playlist.id">
-                                                <label>
-                                                    <input type="checkbox" v-model="selectedPlaylists"
-                                                        :value="playlist.id" />
-                                                    {{ playlist.name }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                @click="togglePlaylistModal">Close</button>
-                                            <button type="button" class="btn btn-primary" @click="updateSongPlaylists">Save
-                                                Changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Modal>
                             <div v-for="song in filteredSongs" :key="song.id" class="song-item d-flex border ">
                                 <!-- Cover Pic -->
                                 <img :src="song.coverpath" alt="Cover" class="cover-pic align-self-center ms-3" />
@@ -113,7 +95,40 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-else>
+                        <div v-else-if="pane === 'albums'" class="mb-auto h-100">
+                            <div v-for="album in albums" :key="album.id" class="song-item d-flex border ">
+                                <!-- Cover Pic -->
+                                <img :src="album.coverpath" alt="Cover" class="cover-pic align-self-center ms-3" />
+
+                                <!-- Song Details -->
+                                <div class="song-details d-flex align-items-center">
+                                    <!-- Song Name -->
+                                    <h3>{{ album.title }}</h3>
+
+                                    <!-- Album -->
+                                    <p class="ms-3">{{ album.artist }}</p>
+
+                                    <button @click="togglePlaylistModal(album)" class="btn btn-info ms-auto me-3">
+                                        <i class="bi bi-music-note-list"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="mb-auto h-100">
+                            <div v-for="playlist in playlists" :key="playlist.id" class="song-item d-flex border ">
+                                <!-- Playlist Details -->
+
+                                <div class="song-details d-flex align-items-center">
+                                    <!-- Playlist Name -->
+                                    <h3 class="ms-3">{{ playlist.name }}</h3>
+
+
+                                    <button @click="toggleAssignPlaylistModal(playlist.id)"
+                                        class="btn btn-info ms-auto me-3">
+                                        <i class="bi bi-music-note-list"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <Modal @close="toggleAddPlaylistModal" :modalActive="addPlaylistModalActive">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -140,17 +155,7 @@
                                     </div>
                                 </div>
                             </Modal>
-                            <div v-for="playlist in playlists" :key="playlist.id" class="playlist-item d-flex border ">
-                                <!-- Playlist Details -->
-                                <div class="playlist-details d-flex align-items-center">
-                                    <h3>{{ playlist.name }}</h3>
-                                    <p>Created at: {{ formatCreatedAt(playlist.created_at) }}</p>
-                                </div>
-                            </div>
                         </div>
-
-
-
                     </div>
                 </div>
             </div>
@@ -169,14 +174,22 @@
 import AudioPlayer from '@liripeng/vue-audio-player'
 import axios from 'axios';
 import { VueDraggableNext } from 'vue-draggable-next';
-import Modal from "../components/Modal.vue";
+import AssignPlaylistForm from '../../components/playlists/AssignPlaylistForm.vue';
+import Modal from "../../components/Modal.vue";
+import { ref } from "vue";
 
 export default {
     // Your component logic goes here
     components: {
         AudioPlayer,
         draggable: VueDraggableNext,
-        Modal
+        Modal,
+        AssignPlaylistForm
+    },
+    setup() {
+        const assignPlaylistModalActive = ref(false);
+
+        return { assignPlaylistModalActive };
     },
     data() {
         return {
@@ -192,11 +205,20 @@ export default {
             addPlaylistModalActive: false,
             isPlaylistModalActive: false,
             newPlaylistName: '',
+            query: '',
+
+            playListToEdit: null,
         };
     },
     beforeMount() {
         this.updateMusicList();
         this.updatePlaylistList();
+        this.updateAlbumList();
+    },
+    watch: {
+        query(newVal) {
+            this.filterFunction(this.sortBy);
+        }
     },
     methods: {
         updateMusicList() {
@@ -206,9 +228,38 @@ export default {
                     this.songs = response.data;
                     this.filteredSongs = this.songs.slice(); // Initial filtered list is all songs
                     this.audioList = this.generateAudioList(); // Generate initial audio list
+
+                    for (const element of this.songs) {
+                        if (element.coverpath == null)
+                            element.coverpath = "../src/assets/placeholder.webp"
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching songs:', error);
+                });
+        },
+        updatePlaylistList() {
+            axios.get('http://localhost:5000/playlists')
+                .then(response => {
+                    this.playlists = response.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching playlists:', error);
+                });
+        },
+        updateAlbumList() {
+            const API_ENDPOINT = 'http://localhost:5000/';
+            // Make an API request to fetch songs
+            axios.get(API_ENDPOINT + 'albums')  // Update the URL as per your actual API endpoint
+                .then(response => {
+                    this.albums = response.data;
+                    for (const element of this.albums) {
+                        if (element.coverpath == null)
+                            element.coverpath = "../src/assets/placeholder.webp"
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching albums:', error);
                 });
         },
         generateAudioList() {
@@ -231,18 +282,23 @@ export default {
             draggable.removeFromGroup('queue', item);
         },
         filterFunction(value) {
+            console.log(this.songs);
             this.sortBy = value;
             // Update filteredSongs based on chosen criteria (adjust logic based on your data structure)
-            this.filteredSongs = this.songs.slice().sort((a, b) => {
+            this.filteredSongs = this.songs.slice().filter(song => {
+                // Check if the song matches the search criteria based on searchBy
+                if (this.searchBy === 'genres') {
+                    // Check if any genre matches the query
+                    return song[this.searchBy].some(genre => genre.toLowerCase().includes(this.query.toLowerCase()));
+                } else {
+                    // Check if the value of searchBy matches the query
+                    return song[this.searchBy].toLowerCase().includes(this.query.toLowerCase());
+                }
+            }).sort((a, b) => {
                 if (value === 'title') return a.title.localeCompare(b.title);
                 else if (value === 'artist') return a.artist.localeCompare(b.artist);
                 // Add logic for other sort criteria
             });
-        },
-        searchByChange(value) {
-            this.searchBy = value.toLowerCase();
-
-            // logic
         },
 
         switchToPane(value) {
@@ -252,23 +308,17 @@ export default {
             } else if (value == 'playlists') {
                 this.pane = value;
                 this.updatePlaylistList();
-            } else if (value == 'albums') { }
-        },
-        updatePlaylistList() {
-            axios.get('http://localhost:5000/playlists')
-                .then(response => {
-                    this.playlists = response.data;
-                })
-                .catch(error => {
-                    console.error('Error fetching playlists:', error);
-                });
+            } else if (value == 'albums') {
+                this.pane = value;
+                this.updateAlbumList();
+
+            }
         },
         createNewPlaylist(name) {
             // Implement logic to create a new playlist
             if (name) {
                 axios.post('http://localhost:5000/playlist/create', {
-                    name: name,
-                    songs: [],  // You may provide an initial list of song IDs if needed
+                    name: name
                 })
                     .then(response => {
                         console.log(response)
@@ -281,26 +331,6 @@ export default {
                     });
             }
         },
-        updateSongPlaylists() {
-            // Update the playlists for the current song on the server
-            const selectedPlaylists = this.selectedPlaylists.map(id => ({ id }));
-            axios.put(`http://localhost:5000/playlists/${this.currentSongId}`, {
-                songs_to_add: selectedPlaylists,
-                songs_to_remove: this.playlists
-                    .filter(playlist => !this.selectedPlaylists.includes(playlist.id))
-                    .map(playlist => ({ id: playlist.id })),
-            })
-                .then(response => {
-                    // Optionally handle the response
-                    console.log('Playlists updated successfully:', response.data);
-                })
-                .catch(error => {
-                    console.error('Error updating playlists:', error);
-                })
-                .finally(() => {
-                    this.closePlaylistModal();
-                });
-        },
         formatCreatedAt(timestamp) {
             // Implement your own formatting logic
             return new Date(timestamp).toLocaleDateString();
@@ -310,16 +340,16 @@ export default {
             // Optionally, you can reset the new playlist name when closing the modal
             if (!this.addPlaylistModalActive) {
                 this.newPlaylistName = '';
+                this.updatePlaylistList();
             }
         },
-        togglePlaylistModal(song) {
-            if (song) {
-                this.currentSongId = song.id;
-                this.selectedPlaylists = this.playlists
-                    .filter(playlist => playlist.songs.some(s => s.id === song.id))
-                    .map(playlist => playlist.id);
+        toggleAssignPlaylistModal(id) {
+            this.playListToEdit = id;
+            this.assignPlaylistModalActive = !this.assignPlaylistModalActive;
+            if (!this.assignPlayListModalActive) {
+                this.playListToEdit = null;
+                this.updatePlaylistList();
             }
-            this.isPlaylistModalActive = !this.isPlaylistModalActive;
         },
     }
 };
