@@ -85,7 +85,7 @@ export default {
             if (this.isLoginPage) {
                 // Login logic
                 console.log('Logging in with:', this.email, this.password);
-                axios.post(path + 'login-user', { email: this.email, password: this.password }, { headers: { 'Access-Control-Allow-Origin': '*' } })
+                axios.post(path + 'login-user', { email: this.email, password: this.password, role: "creator" }, { headers: { 'Access-Control-Allow-Origin': '*' } })
                     .then(response => {
                         const token = response.data.token;
                         const role = response.data.role;
