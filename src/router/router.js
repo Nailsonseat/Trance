@@ -1,12 +1,12 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import HelloWorldVue from "../components/HelloWorld.vue";
-import UserAuth from "../components/UserAuth.vue";
-import CreatorAuth from "../components/CreatorAuth.vue";
-import AdminAuth from "../components/AdminAuth.vue";
-import Dashboard from "../components/Dashboard.vue";
-import UserHome from "../components/UserHome.vue";
-import CreatorHome from "../components/CreatorHome.vue";
-import Test from "../components/Test.vue";
+import HelloWorldVue from "../pages/HelloWorld.vue";
+import UserAuth from "../pages/user/UserAuth.vue";
+import CreatorAuth from "../pages/creator/CreatorAuth.vue";
+import AdminAuth from "../pages/admin/AdminAuth.vue";
+import Dashboard from "../pages/Dashboard.vue";
+import UserHome from "../pages/user/UserHome.vue";
+import CreatorHome from "../pages/creator/CreatorHome.vue";
+import Test from "../pages/Test.vue";
 
 const routes = [
   { path: "/", component: HelloWorldVue, name: "base" },
