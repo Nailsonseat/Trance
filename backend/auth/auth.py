@@ -1,8 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, jsonify, request
 from flask_security import verify_password, hash_password, logout_user, auth_required, roles_required, login_user, current_user
-from models import user_datastore
+from auth.token_required import token_required
+from models import User, user_datastore
 from __init__ import app, db
+from functools import wraps
+import jwt
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -28,13 +31,16 @@ def user_login():
     if not user:
         return jsonify({"message": "User Not Found"}), 404
 
-    if verify_password(response.get("password"), user.password):
+    if verify_password(response.get("password"), user.password) and user.roles[0].name == response.get("role"):
         login_user(user)
         user.last_login_time = datetime.utcnow()
         user_datastore.commit()
         db.session.commit()
 
-        return jsonify({"token": user.get_auth_token(), "email": user.email, "role": user.roles[0].name})
+        token = jwt.encode(
+            {"id": user.id, "role": user.roles[0].name, 'exp': datetime.utcnow() + timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
+
+        return jsonify({"token": token, "username": user.username, "email": user.email, "role": user.roles[0].name})
     else:
         return jsonify({"message": "FAILURE"}), 400
 
@@ -61,10 +67,10 @@ def register_user():
         return f"An error occurred: {str(e)}"
 
 
-@auth_bp.post('/logout')
-@auth_required('token', 'session')
-def logout():
-    current_user.last_loggout_time = datetime.utcnow()
+@auth_bp.get('/logout-user')
+@token_required
+def logout(user):
+    user.last_loggout_time = datetime.utcnow()
     logout_user()
     db.session.commit()
     return jsonify({'message': 'Logout Sucessful'})
