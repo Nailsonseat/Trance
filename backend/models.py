@@ -47,8 +47,6 @@ class Song(db.Model):
     likes = db.Column(db.Integer, default=0)
     streamed_count = db.Column(db.Integer, default=0)
     reports = db.Column(db.Integer, default=0)
-    album_id = db.Column(db.Integer, db.ForeignKey(
-        'album.id', ondelete='SET NULL'), nullable=True)
     filepath = db.Column(db.String(255))
     coverpath = db.Column(db.String(255))
     hours = db.Column(db.Integer, default=0)
@@ -68,9 +66,11 @@ class Album(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     artist = db.Column(db.String(255), nullable=False)
-    release_date = db.Column(db.Date)
-    genre = db.Column(db.String(50))
+    release_date = db.Column(db.DateTime)
     reports = db.Column(db.Integer, default=0)
+    total_hours = db.Column(db.Integer, default=0)
+    total_minutes = db.Column(db.Integer, default=0)
+    total_seconds = db.Column(db.Integer, default=0)
     cover_path = db.Column(db.String(255))
 
 
@@ -99,6 +99,13 @@ class SongGenre(db.Model):
     song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key=True)
     genre_id = db.Column(db.Integer, db.ForeignKey(
         'genres.id'), primary_key=True)
+
+
+class AlbumSong(db.Model):
+    __tablename__ = 'song_album'
+    song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key=True)
+    album_id = db.Column(db.Integer, db.ForeignKey(
+        'album.id'), primary_key=True)
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

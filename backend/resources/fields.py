@@ -26,6 +26,9 @@ album_fields = {
     'release_date': fields.DateTime,
     'genre': fields.String,
     'reports': fields.Integer,
+    'total_hours': fields.Integer,
+    'total_minutes': fields.Integer,
+    'total_seconds': fields.Integer,
     'cover_path': fields.String,
     'songs': fields.List(fields.Nested(song_fields)),
 }
@@ -35,5 +38,4 @@ playlist_fields = {
     'id': fields.Integer,
     'name': fields.String,
     'created_at': fields.DateTime,
-    'songs': fields.List(fields.Nested(song_fields)),
 }
