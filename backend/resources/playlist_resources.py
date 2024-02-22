@@ -20,26 +20,15 @@ class PlaylistCreateResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True,
                             help='Name of the playlist is required')
-        parser.add_argument('songs', type=list, default=[],
-                            help='List of song IDs is required')
         args = parser.parse_args()
 
         playlist_name = args['name']
-        song_ids = args['songs']
 
         # Check if a playlist with the same name already exists
         existing_playlist = Playlist.query.filter_by(
             name=playlist_name).first()
         if existing_playlist:
             return {'error': f'Playlist with name {playlist_name} already exists.'}, 400
-
-        # If songs are provided, retrieve the songs based on the provided song IDs
-        if song_ids:
-            songs = Song.query.filter(Song.id.in_(song_ids)).all()
-            if len(songs) != len(song_ids):
-                return {'error': 'One or more provided song IDs are invalid.'}, 400
-        else:
-            songs = []
 
         # Get the current user ID using authentication logic
         user_id = current_user.id
@@ -49,16 +38,50 @@ class PlaylistCreateResource(Resource):
         # Create a new playlist
         new_playlist = Playlist(name=playlist_name, user_id=user_id)
 
-        # Link the playlist with songs through the PlaylistSong table
-        for song in songs:
-            playlist_song = PlaylistSong(song=song)
-            new_playlist.songs.append(playlist_song)
-
         # Add the new playlist to the database
         db.session.add(new_playlist)
         db.session.commit()
 
         return new_playlist, 201
+
+
+class PlaylistAssignResource(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'song_ids', type=list, location='json', required=True, help='List of song IDs is required')
+        super(PlaylistAssignResource, self).__init__()
+
+    def get(self, playlist_id):
+        # Query the database to get the associated song_ids for the given playlist_id
+        song_ids = PlaylistSong.query.filter_by(
+            playlist_id=playlist_id).with_entities(PlaylistSong.song_id).all()
+
+        # Extract the song_ids from the result
+        song_ids = [song_id[0] for song_id in song_ids]
+
+        return {'song_ids': song_ids}
+
+    def put(self, playlist_id):
+        # Get the playlist by ID
+        playlist = Playlist.query.get_or_404(playlist_id)
+
+        # Parse the request payload using reqparse
+        args = self.reqparse.parse_args()
+        song_ids = args['song_ids']
+
+        # Remove existing associations for the current playlist
+        PlaylistSong.query.filter_by(playlist_id=playlist.id).delete()
+
+        # Create new associations for the given songs and playlist
+        for song_id in song_ids:
+            playlist_song_association = PlaylistSong(
+                song_id=song_id, playlist_id=playlist.id)
+            db.session.add(playlist_song_association)
+
+        db.session.commit()
+
+        return {'message': f'Songs assigned to playlist {playlist.name} successfully'}, 200
 
 
 class PlaylistManagementResource(Resource):
