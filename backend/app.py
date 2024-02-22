@@ -1,13 +1,37 @@
 from flask_security import Security, SQLAlchemyUserDatastore, hash_password, login_user
-from models import user_datastore
-from __init__ import app, db, api
+from models import user_datastore, User, Role, RolesUsers
+from datetime import datetime as dt, timedelta
+from celery.schedules import crontab
+from __init__ import app, db, api, mail
 from resources.miscellaneous import AdminDashboardResource, FlagSongResource
 from resources.song_resources import SongResource, SongListResource, SongCreateResource, SongManagementResource
-from resources.album_resources import AlbumListResource, AlbumCreateResource, AlbumManagementResource, AlbumResource
-from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource, PlaylistListResource
+from resources.album_resources import AlbumListResource, AlbumCreateResource, AlbumManagementResource, AlbumResource, AlbumAssignResource
+from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource, PlaylistListResource, PlaylistAssignResource
 from resources.cover_resources import CoverUploadResource
 from resources.song_upload_resources import SongUploadResource, SongReplacementResource
+from resources.album_upload_resources import AlbumCoverUploadResource, AlbumCoverReplaceResource
 from auth.auth import auth_bp
+from flask_mail import Mail, Message
+from flask import render_template
+from tasks import remainder
+from worker import celery_init_app
+celery_app = celery_init_app(app)
+
+
+@celery_app.on_after_configure.connect
+def send_email(sender, **kwargs):
+    app.app_context().push()
+    for user in User.query.all():
+        role = Role.query.filter_by(id=RolesUsers.query.filter_by(
+            id=user.id).first().role_id).first().name
+        if role == "user" and user.active == True:
+            if (user.last_login_at == None or dt.utcnow()-user.last_login_at > timedelta(days=1)):
+                email = user.email
+                sender.add_periodic_task(
+                    crontab(hour='*', minute='*', day_of_week='*'),
+                    # crontab(hour='0', minute='30', day_of_week='*'),
+                    remainder.s(email),
+                )
 
 
 def initalize_roles():
@@ -44,6 +68,9 @@ if __name__ == '__main__':
 
     api.add_resource(PlaylistCreateResource, '/playlist/create')
     api.add_resource(PlaylistManagementResource, '/playlist/<int:playlist_id>')
+    api.add_resource(PlaylistAssignResource,
+                     '/playlist/<int:playlist_id>/assign')
+
     api.add_resource(FlagSongResource, '/songs/<int:song_id>/flag')
 
     api.add_resource(SongResource, '/song/<int:song_id>')
@@ -58,5 +85,8 @@ if __name__ == '__main__':
     api.add_resource(AlbumResource, '/album/<int:album_id>')
     api.add_resource(AlbumCreateResource, '/albums/create')
     api.add_resource(AlbumManagementResource, '/albums/<int:album_id>/manage')
+    api.add_resource(AlbumAssignResource, '/albums/<int:album_id>/assign')
+
+    api.add_resource(AlbumCoverUploadResource, '/albumcover/upload')
 
     app.run(debug=True)
