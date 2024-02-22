@@ -99,6 +99,7 @@
       <button type="button" class="btn btn-primary" @click="updateSong">Update Song</button>
       <button type="button" class="btn btn-primary" @click="closeModal">Close</button>
     </div>
+
   </div>
 </template>
 
@@ -255,9 +256,7 @@ export default {
       return this.genres.every(genre => genreRegex.test(genre));
     },
     updateSong() {
-      if (this.isMusicReplacerSelected || this.isCoverReplacerSelected) {
-
-      }
+      /// TODO - Update the song entry in the database
 
     },
 
