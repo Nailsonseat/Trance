@@ -15,7 +15,7 @@ export default {
     },
     logout() {
       const path = 'http://127.0.0.1:5000/';
-      axios.post(path + 'logout')
+      axios.get(path + 'logout-user')
         .then(response => {
           console.log('Logout successful:', response.data);
           // Clear auth token and role from local storage
