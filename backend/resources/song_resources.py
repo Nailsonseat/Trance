@@ -42,7 +42,6 @@ class SongCreateResource(Resource):
         parser.add_argument('artist', type=str, required=True,
                             help='Artist is required')
         parser.add_argument('lyrics', type=str, help='Lyrics are optional')
-        parser.add_argument('album_id', type=int, help='Album ID')
         parser.add_argument('filepath', type=str,
                             help='Path where mp3 is stored')
         parser.add_argument('coverpath', type=str,
@@ -65,7 +64,6 @@ class SongCreateResource(Resource):
             title=args['title'],
             artist=args['artist'],
             lyrics=args['lyrics'],
-            album_id=args['album_id'],
             filepath=args['filepath'],
             coverpath=args['coverpath'],
             created_at=args['created_at'],
