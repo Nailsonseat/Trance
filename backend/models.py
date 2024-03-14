@@ -57,9 +57,10 @@ class Song(db.Model):
 
 class SongsLiked(db.Model):
     __tablename__ = 'songs_liked'
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     song_id = db.Column(db.Integer, db.ForeignKey(
-        'song.id'), unique=True, nullable=False)
+        'song.id'), nullable=False)
 
 
 class Album(db.Model):
