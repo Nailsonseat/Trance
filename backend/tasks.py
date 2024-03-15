@@ -24,6 +24,41 @@ def send_welcome(email):
 
 
 @shared_task(ignore_result=False)
+def send_monthly_report(user):
+    email = user.email
+    if user:
+        # Generate report data for the creator
+        report_data = {
+            'name': user.username,
+            'total_songs': user.created_songs.count(),
+            'total_albums': user.created_albums.count(),
+            'total_likes': user.likes_received.count(),
+            'total_reports': user.reports_received.count(),
+            'total_streams': user.streams_received.count(),
+            # Add more data if needed
+        }
+
+        # Render HTML content for the email using a template
+        html_content = render_template(
+            'email/monthly_report.html', data=report_data)
+
+        # Create a Flask-Mail Message instance
+        msg = Message(subject='Monthly Trance Creator Report',
+                      sender='noreply@app.com',
+                      recipients=[email])
+        msg.html = html_content
+
+        try:
+            # Send email to the creator
+            mail.send(msg)
+            return {"message": f"Email sent successfully to {email}"}, 200
+        except Exception as e:
+            return str(e), 500
+    else:
+        return {"message": "User not found or not a creator"}, 404
+
+
+@shared_task(ignore_result=False)
 def remainder(email):
     print("Hi")
     return send_welcome(email)
