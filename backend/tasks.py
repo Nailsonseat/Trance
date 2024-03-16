@@ -7,7 +7,9 @@ from celery import shared_task
 
 def send_welcome(email):
     sender = 'noreply@app.com'
-    subject = "🌟 Don't Miss Out on the Fun! Your App Awaits Your Glorious Presence! 🚀"
+def send_reminder(email):
+    sender = 'noreply@app.com'
+    subject = "🌟 Don't Miss Out on the Fun!"
     msg = Message(subject=subject, sender=sender, recipients=[email])
     msg.body = ""
     username = User.query.filter_by(email=email).first().username
@@ -15,7 +17,7 @@ def send_welcome(email):
         'app_name': "Trance",
         "title": f"Hey {username},",
     }
-    msg.html = render_template('email.html', data=data)
+    msg.html = render_template('reminder.html', data=data)
     try:
         mail.send(msg)
         return {"message": f"Email sent successfully to {email}"}, 200
@@ -60,5 +62,4 @@ def send_monthly_report(user):
 
 @shared_task(ignore_result=False)
 def remainder(email):
-    print("Hi")
-    return send_welcome(email)
+    return send_reminder(email)
