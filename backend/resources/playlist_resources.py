@@ -13,16 +13,17 @@ class PlaylistListResource(Resource):
         playlists = Playlist.query.all()
         return playlists
 
-
-class PlaylistCreateResource(Resource):
     @marshal_with(playlist_fields)
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True,
                             help='Name of the playlist is required')
+        parser.add_argument('user_id', type=int, required=True,
+                            help='User ID is required')
         args = parser.parse_args()
 
         playlist_name = args['name']
+        user_id = args['user_id']
 
         # Check if a playlist with the same name already exists
         existing_playlist = Playlist.query.filter_by(
@@ -30,8 +31,6 @@ class PlaylistCreateResource(Resource):
         if existing_playlist:
             return {'error': f'Playlist with name {playlist_name} already exists.'}, 400
 
-        # Get the current user ID using authentication logic
-        user_id = current_user.id
         if not user_id:
             return {'error': 'User ID not found'}, 401
 
