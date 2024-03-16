@@ -6,6 +6,7 @@ from models import User, user_datastore
 from __init__ import app, db
 from functools import wraps
 import jwt
+from tasks import send_welcome
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -40,7 +41,7 @@ def user_login():
         token = jwt.encode(
             {"id": user.id, "role": user.roles[0].name, 'exp': datetime.utcnow() + timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
 
-        return jsonify({"token": token, "username": user.username, "email": user.email, "role": user.roles[0].name})
+        return jsonify({"token": token, "username": user.username, "email": user.email, "role": user.roles[0].name, "id": user.id})
     else:
         return jsonify({"message": "FAILURE"}), 400
 
@@ -53,14 +54,13 @@ def register_user():
     password = response.get('password')
     role = response.get('role')
 
-    print(response)
-
     try:
         print(user_datastore.find_user(email=email))
         if not user_datastore.find_user(email=email):
             user_datastore.create_user(
                 username=username, email=email, password=hash_password(password), roles=[role])
         db.session.commit()
+        send_welcome(email)
         return jsonify({"message": "SUCCESS"}), 200
     except Exception as e:
         db.session.rollback()
