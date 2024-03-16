@@ -7,6 +7,22 @@ from celery import shared_task
 
 def send_welcome(email):
     sender = 'noreply@app.com'
+    subject = "Welcome to Trance!"
+    msg = Message(subject=subject, sender=sender, recipients=[email])
+    msg.body = ""
+    username = User.query.filter_by(email=email).first().username
+    data = {
+        'app_name': "Trance",
+        "title": f"Hey {username},",
+    }
+    msg.html = render_template('welcome.html', data=data)
+    try:
+        mail.send(msg)
+        return {"message": f"Email sent successfully to {email}"}, 200
+    except Exception as e:
+        return (str(e))
+
+
 def send_reminder(email):
     sender = 'noreply@app.com'
     subject = "🌟 Don't Miss Out on the Fun!"
