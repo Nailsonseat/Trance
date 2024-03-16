@@ -119,9 +119,15 @@ class PlaylistManagementResource(Resource):
 
         return playlist
 
-    @roles_required('user')
     def delete(self, playlist_id):
-        playlist = Playlist.query.get_or_404(playlist_id)
+        # Attempt to find the playlist by its ID
+        playlist = Playlist.query.get(playlist_id)
+
+        if not playlist:
+            return {'error': 'Playlist not found'}, 404
+
+        # Delete the playlist
         db.session.delete(playlist)
         db.session.commit()
-        return {'message': 'Playlist deleted successfully'}
+
+        return {'message': 'Playlist deleted successfully'}, 200
