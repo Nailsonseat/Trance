@@ -34,6 +34,16 @@ def send_email(sender, **kwargs):
                 )
 
 
+@celery_app.on_after_configure.connect
+def schedule_monthly_reports(sender, **kwargs):
+    for user in User.query.filter_by(role='creator').all():
+        sender.add_periodic_task(
+            # Run on the 1st day of each month
+            crontab(day_of_month='1', hour='0', minute='0'),
+            send_monthly_report.s(user),
+        )
+
+
 def initalize_roles():
     admin_role = app.Security.datastore.find_or_create_role(
         name='admin', description='Administrator')
