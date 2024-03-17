@@ -6,14 +6,15 @@ from __init__ import app, db, api, mail
 from resources.miscellaneous import AdminDashboardResource, FlagSongResource
 from resources.song_resources import SongResource, SongListResource, SongCreateResource, SongManagementResource
 from resources.album_resources import AlbumListResource, AlbumCreateResource, AlbumManagementResource, AlbumResource, AlbumAssignResource
-from resources.playlist_resources import PlaylistCreateResource, PlaylistManagementResource, PlaylistListResource, PlaylistAssignResource
+from resources.playlist_resources import PlaylistManagementResource, PlaylistListResource, PlaylistAssignResource
 from resources.cover_resources import CoverUploadResource
 from resources.song_upload_resources import SongUploadResource, SongReplacementResource
 from resources.album_upload_resources import AlbumCoverUploadResource, AlbumCoverReplaceResource
+from resources.song_like_resources import SongsLikedResource, SongsLikedListResource
 from auth.auth import auth_bp
 from flask_mail import Mail, Message
 from flask import render_template
-from tasks import remainder
+from tasks import remainder, send_monthly_report
 from worker import celery_init_app
 celery_app = celery_init_app(app)
 
@@ -76,7 +77,6 @@ if __name__ == '__main__':
     api.add_resource(AlbumListResource, '/albums')
     api.add_resource(PlaylistListResource, '/playlists')
 
-    api.add_resource(PlaylistCreateResource, '/playlist/create')
     api.add_resource(PlaylistManagementResource, '/playlist/<int:playlist_id>')
     api.add_resource(PlaylistAssignResource,
                      '/playlist/<int:playlist_id>/assign')
@@ -98,5 +98,8 @@ if __name__ == '__main__':
     api.add_resource(AlbumAssignResource, '/albums/<int:album_id>/assign')
 
     api.add_resource(AlbumCoverUploadResource, '/albumcover/upload')
+
+    api.add_resource(SongsLikedListResource, '/likes/<int:user_id>')
+    api.add_resource(SongsLikedResource, '/like/<int:song_id>')
 
     app.run(debug=True)
