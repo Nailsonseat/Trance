@@ -18,7 +18,7 @@
 
             <VueMultiselect v-model="selectedSongs" :options="songs" :multiple="true"
                 placeholder="Select Songs to add to album" label="title" track-by="title" :allow-empty="true" />
-
+            <!-- <MultiCheckbox v-model:value="selectedSongs" :options="songs" /> -->
         </div>
 
 
@@ -35,11 +35,13 @@
 <script>
 import axios from 'axios';
 import VueMultiselect from 'vue-multiselect'
+import MultiCheckbox from '../MultiCheckbox.vue';
 
 
 export default {
     components: {
-        VueMultiselect
+        VueMultiselect,
+        MultiCheckbox
     },
 
     data() {
@@ -156,5 +158,3 @@ export default {
     background-color: red;
 }
 </style>
-
-
