@@ -30,8 +30,12 @@
                 </uploader>
             </div>
 
+            <!-- Add your album name input field here -->
             <label class="py-3" for="songLyrics">Album Name</label>
             <textarea id="albumName" v-model="albumName" class="form-control bg-transparent text-white"></textarea>
+
+            <!-- Error text-->
+            <div v-show="!isValidName" class="text-danger">Please enter a valid album name</div>
 
             <div v-if="isCoverSelected">
                 <img class="drop-zone" :src="cover" alt="Hello">
@@ -39,9 +43,6 @@
             <button type="button" class="clear-button btn btn-outline-danger mt-3" @click="">Clear
                 Cover
             </button>
-
-
-
         </div>
 
 
@@ -76,7 +77,8 @@ export default {
                 testChunks: false,
                 accept: 'image/*',
                 singleFile: true,
-            }
+            },
+            isValidName: true,
         }
     },
     methods: {
@@ -137,8 +139,6 @@ export default {
                 artist: 'aadarsh',
                 cover_path: this.coverSelectionResponse ? this.coverSelectionResponse.path : null,
             };
-
-
             axios.post(API_ENDPOINT + 'albums/create', payload)
                 .then(response => {
                     console.log('Album created successfully:', response);
