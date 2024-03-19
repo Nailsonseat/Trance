@@ -86,12 +86,15 @@ export default {
                     .then(response => {
                         const token = response.data.token;
                         const role = response.data.role;
+                        const id = response.data.id;
                         console.log('Operation successful (Login) :', response.data);
                         // Redirect to the dashboard or perform other actions based on the response
 
                         if (this.isLocalStorageSupported()) {
                             const tokenKey = 'auth-token';
                             const roleKey = 'role';
+                            const idKey = 'id';
+                            localStorage.setItem(idKey, id);
                             localStorage.setItem(tokenKey, token);
                             localStorage.setItem(roleKey, role);
                         }
