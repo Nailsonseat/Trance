@@ -351,6 +351,19 @@ export default {
                 this.updatePlaylistList();
             }
         },
+        deletePlaylist(id) {
+            // Implement logic to delete a playlist
+            axios.delete(`http://localhost:5000/playlist/${id}`)
+                .then(response => {
+                    console.log(response)
+                    alert('Playlist deleted successfully!');
+                    this.updatePlaylistList();
+                })
+                .catch(error => {
+                    console.error('Error deleting playlist:', error);
+                    alert('Error deleting playlist. Please try again.');
+                });
+        },
     }
 };
 </script>
