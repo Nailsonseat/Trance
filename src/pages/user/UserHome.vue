@@ -221,6 +221,18 @@ export default {
         }
     },
     methods: {
+        likeSong(songId) {
+            const userId = localStorage.getItem('id');
+            axios.put(`http://localhost:5000/like/${songId}`, { user_id: userId })
+                .then(response => {
+                    console.log(response.data.message);
+                    this.getUserLikes();
+                })
+                .catch(error => {
+                    console.error('Error liking song:', error);
+                });
+
+        },
         updateMusicList() {
             // Update URL as per your actual API endpoint
             axios.get('http://localhost:5000/songs')
