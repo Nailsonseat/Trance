@@ -316,13 +316,14 @@ export default {
         },
         createNewPlaylist(name) {
             // Implement logic to create a new playlist
-            if (name) {
-                axios.post('http://localhost:5000/playlist/create', {
-                    name: name
+            const userId = localStorage.getItem('id');
+            if (name && userId) {
+                axios.post('http://localhost:5000/playlists', {
+                    name: name,
+                    user_id: userId
                 })
                     .then(response => {
                         console.log(response)
-                        //this.playlists.push(response.data);
                         alert('Playlist created successfully!');
                     })
                     .catch(error => {
