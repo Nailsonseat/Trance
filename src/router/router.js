@@ -6,16 +6,28 @@ import AdminAuth from "../pages/admin/AdminAuth.vue";
 import Dashboard from "../pages/Dashboard.vue";
 import UserHome from "../pages/user/UserHome.vue";
 import CreatorHome from "../pages/creator/CreatorHome.vue";
+import Unauthorized from "../pages/Unauthorized.vue";
 import Test from "../pages/Test.vue";
 
 const routes = [
-  { path: "/", component: HelloWorldVue, name: "base" },
+  { path: "/", redirect: "/login-user" },
   { path: "/login-user", component: UserAuth, name: "UserAuth" },
   { path: "/login-creator", component: CreatorAuth, name: "CreatorAuth" },
   { path: "/admin-auth", component: AdminAuth, name: "AdminAuth" },
   { path: "/dashboard", component: Dashboard, name: "Dashboard" },
-  { path: "/home-user", component: UserHome, name: "UserHome" },
-  { path: "/home-creator", component: CreatorHome, name: "CreatorHome" },
+  { path: "/unauthorized", component: Unauthorized, name: "Test" },
+  {
+    path: "/home-user",
+    component: UserHome,
+    name: "UserHome",
+    meta: { requiresUser: true },
+  },
+  {
+    path: "/home-creator",
+    component: CreatorHome,
+    name: "CreatorHome",
+    meta: { requiresCreator: true },
+  },
 ];
 
 export const router = createRouter({
