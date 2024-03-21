@@ -3,8 +3,9 @@
         <div class="container-fluid">
             <div style="background-color: black;">
                 <div class="row">
-                    <div class="col-3 d-flex" style="height: 800px; background-color: teal">
-                        <draggable class="dragArea list-group w-100" :list="audioList" group="queue">
+                    <div class="col-3 d-flex" style="height: 800px; background-color: gray">
+                        <draggable class="dragArea list-group w-100" :list="audioList" group="queue"
+                            @change="onQueueChanged">
                             <div class="list-group-item bg-gray-300 m-1 mt-3 p-3 rounded-md text-center"
                                 v-for="element in audioList" :key="element.name">
                                 <span class="w-100">{{ element.name }}</span>
@@ -14,14 +15,14 @@
                     <div class="col d-flex flex-column">
                         <div class="mb-auto d-flex w-100" style="padding: 20px; background-color: #333;color: #fff;">
                             <div class="btn-group me-auto">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     Filter by
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" @click="filterFunction('title')">Name</a></li>
                                     <li><a class="dropdown-item" @click="filterFunction('artist')">Artist</a></li>
-                                    <li><a class="dropdown-item" @click="filterFunction('artist')">Likes</a></li>
+                                    <!--<li><a class="dropdown-item" @click="filterFunction('artist')">Likes</a></li> -->
                                 </ul>
                             </div>
 
@@ -81,16 +82,33 @@
                                     <h3>{{ song.title }}</h3>
 
                                     <!-- Album -->
-                                    <p>{{ song.album }}</p>
+                                    <h6>{{ song.album }}</h6>
 
                                     <!-- Duration -->
-                                    <p class="mx-3">
-                                        {{ song.hours > 0 ? song.hours + 'h ' : '' }} {{ song.minutes }}m {{ song.seconds
+                                    <p class="ms-3">
+                                        {{ song.hours > 0 ? song.hours + 'h ' : '' }} {{ song.minutes }}m {{
+                            song.seconds
                                         }}s
                                     </p>
 
-                                    <button @click="togglePlaylistModal(song)" class="btn btn-info ms-auto me-3">
+                                    <!-- Album Artist-->
+                                    <p class=" mx-3"> by {{ song.artist }}</p>
+
+                                    <button
+                                        @click="playSingleSong(audioList.findIndex(audio => audio.name === song.title))"
+                                        class="btn btn-outline-success ms-auto me-3">
+                                        <i class="bi bi-play-fill"></i>
+                                    </button>
+
+                                    <button @click="likeSong(song.id)" class="btn btn-outline-success me-3">
+                                        <i :style="{ color: userLikes.includes(song.id) ? '#04b5c2' : 'white' }"
+                                            class="bi bi-hand-thumbs-up-fill"></i>
+                                    </button>
+                                    <!-- <button @click="togglePlaylistModal(song)" class="btn btn-info  me-3">
                                         <i class="bi bi-music-note-list"></i>
+                                    </button> -->
+                                    <button @click="" class="btn btn-danger me-3">
+                                        <i class="bi bi-flag-fill"></i>
                                     </button>
                                 </div>
                             </div>
@@ -105,10 +123,12 @@
                                     <!-- Song Name -->
                                     <h3>{{ album.title }}</h3>
 
-                                    <!-- Album -->
+                                    <!-- Album Artist-->
                                     <p class="ms-3">{{ album.artist }}</p>
 
-                                    <button @click="togglePlaylistModal(album)" class="btn btn-info ms-auto me-3">
+
+                                    <button @click="toggleAssignPlaylistModal(album.id)"
+                                        class="btn btn-info ms-auto me-3">
                                         <i class="bi bi-music-note-list"></i>
                                     </button>
                                 </div>
@@ -127,8 +147,21 @@
                                         class="btn btn-info ms-auto me-3">
                                         <i class="bi bi-music-note-list"></i>
                                     </button>
+
+                                    <!-- Delete Button -->
+                                    <button @click="deletePlaylist(playlist.id)" style="color: red;"
+                                        class="delete-button me-3">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
+
+
+
+                            <!-- Modal for adding new playlist -->
+
+
+
                             <Modal @close="toggleAddPlaylistModal" :modalActive="addPlaylistModalActive">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
