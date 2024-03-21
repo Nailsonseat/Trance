@@ -221,6 +221,9 @@ export default {
         }
     },
     methods: {
+        playSingleSong(index) {
+            this.audioPlayer.play(index);
+        },
         onQueueChanged() {
             if (this.audioPlayer.isPlaying)
                 this.audioPlayer.play();
