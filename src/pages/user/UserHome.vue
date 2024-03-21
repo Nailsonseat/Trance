@@ -221,6 +221,16 @@ export default {
         }
     },
     methods: {
+        getSongLikes(songId) {
+            // Update URL as per your actual API endpoint
+            axios.get(`http://localhost:5000/likes/${songId}`)
+                .then(response => {
+                    return response.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
         getUserLikes() {
             // Update URL as per your actual API endpoint
             const userId = localStorage.getItem('id');
