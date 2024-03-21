@@ -221,6 +221,10 @@ export default {
         }
     },
     methods: {
+        onQueueChanged() {
+            if (this.audioPlayer.isPlaying)
+                this.audioPlayer.play();
+        },
         getSongLikes(songId) {
             // Update URL as per your actual API endpoint
             axios.get(`http://localhost:5000/likes/${songId}`)
