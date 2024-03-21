@@ -88,7 +88,7 @@
                                     <p class="ms-3">
                                         {{ song.hours > 0 ? song.hours + 'h ' : '' }} {{ song.minutes }}m {{
                             song.seconds
-                                        }}s
+                        }}s
                                     </p>
 
                                     <!-- Album Artist-->
@@ -209,20 +209,23 @@ import axios from 'axios';
 import { VueDraggableNext } from 'vue-draggable-next';
 import AssignPlaylistForm from '../../components/playlists/AssignPlaylistForm.vue';
 import Modal from "../../components/Modal.vue";
+import Like from "../../assets/like.svg";
 import { ref } from "vue";
 
 export default {
     // Your component logic goes here
     components: {
         AudioPlayer,
+        Like,
         draggable: VueDraggableNext,
         Modal,
         AssignPlaylistForm
     },
     setup() {
         const assignPlaylistModalActive = ref(false);
+        const audioPlayer = ref(null);
 
-        return { assignPlaylistModalActive };
+        return { assignPlaylistModalActive, audioPlayer };
     },
     data() {
         return {
@@ -239,7 +242,7 @@ export default {
             isPlaylistModalActive: false,
             newPlaylistName: '',
             query: '',
-
+            userLikes: [],
             playListToEdit: null,
         };
     },
@@ -247,6 +250,7 @@ export default {
         this.updateMusicList();
         this.updatePlaylistList();
         this.updateAlbumList();
+        this.getUserLikes();
     },
     watch: {
         query(newVal) {
